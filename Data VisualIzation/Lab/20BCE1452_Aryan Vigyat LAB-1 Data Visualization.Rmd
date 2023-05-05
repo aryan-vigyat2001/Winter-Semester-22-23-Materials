@@ -1,0 +1,65 @@
+---
+title: "Lab 1 Data Visualization"
+author: "Aryan Vigyat 20BCE1452"
+date: "2023-01-08"
+output: html_document
+---
+Attaching all the libraries
+```{r}
+library(dplyr)
+library(ggvis)
+library(ggplot2)
+```
+
+I Loading the Dataset
+```{r}
+df <- read.csv("C:/Users/ayuar/Downloads/bank_dataset.csv")
+head(df)
+```
+
+I
+```{r}
+df %>% as.data.frame()  %>% 
+  ggvis(x = ~ age.group, y = ~ number.of.loans ) %>%
+  layer_bars()
+```
+II
+```{r}
+df %>% as.data.frame()  %>% 
+  ggvis(x = ~ age.group, y = ~ number.of.loans ) %>%
+  layer_bars() %>%
+  layer_lines(stroke:="violet",prop("y", ~ bad.rate, scale = "ywidth")) 
+```
+```{r}
+r <- max(df$number.of.loans)/max(df$bad.rate)
+ggplot(df)+ geom_bar(aes(x=age.group, y=number.of.loans),stat="identity", fill = "yellow",colour="orange",linewidth=1)  +labs(x="Age Group", y="Number of Loans",title = "Practicing GGPLOT Library")
+```
+
+```{r}
+r <- max(df$number.of.loans)/max(df$bad.rate)
+ggplot(df)+ geom_bar(aes(x=age.group, y=number.of.loans),stat="identity", fill = "yellow",colour="orange",linewidth=1) + geom_line(aes(x=age.group, y=bad.rate*r,group=2),stat="identity",color="violet",linewidth=1) +labs(x="Age Group", y="Number of Loans",title = "Practicing GGPLOT Library")
+```
+
+
+```{r}
+r <- max(df$number.of.loans)/max(df$bad.rate)
+ggplot(df)+ geom_bar(aes(x=age.group, y=number.of.loans),stat="identity", fill = "yellow",colour="orange",linewidth=1) + geom_line(aes(x=age.group, y=bad.rate*r,group=2),stat="identity",color="violet",linewidth=1) + scale_y_continuous(sec.axis=sec_axis(~./r,name="Bad Rate")) + labs(x="Age Group", y="Number of Loans",title = "Practicing GGPLOT Library")
+
+```
+
+```{r}
+r <- max(df$number.of.loans)/max(df$bad.rate)
+ggplot(df)+ geom_bar(aes(x=age.group, y=number.of.loans),stat="identity", fill = "yellow",colour="orange",linewidth=1) + geom_line(aes(x=age.group, y=bad.rate*r,group=2),stat="identity",color="violet",linewidth=1) + scale_y_continuous(sec.axis=sec_axis(~./r,name="Bad Rate")) + labs(x="Age Group", y="Number of Loans",title = "Practicing GGPLOT Library")+plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
+legend("topright", lty = c(1), legend =c('Bad Rate'), pt.cex=2, cex=1, bty=1,
+    col = c('violet'))
+```
+<hr>
+Time and Date Verification
+```{r}
+Sys.info()
+Sys.time()
+Sys.Date()
+```
+<hr>
+<h2 align="center">Thank You</h2>
+

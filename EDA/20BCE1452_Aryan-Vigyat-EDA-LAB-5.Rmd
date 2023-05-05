@@ -1,0 +1,104 @@
+---
+title: "LAB-5 Annova"
+author: "Aryan Vigyat 20BCE1452"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+Attaching the libraries
+```{r}
+library(dplyr)
+library(ggplot2)
+library(boot)
+```
+<h3>Hypothesis</h3>
+<ul>
+<li>Null Hypothesis - There is no significant difference between the population means (&mu;1=&mu;2=&mu;3)</li>
+<li> Alternate Hypothesis - There is siginificant difference between the means (&mu;1&ne;&mu;2&ne;&mu;3)</li>
+</ul>
+
+<h2>Question 1</h2>
+1. Loading the Dataset
+```{r}
+df=PlantGrowth
+summary(df)
+head(df,5)
+```
+<hr>
+2. Finding the Group Wise means
+```{r}
+df %>%
+  group_by(group) %>%
+  summarise(mean=mean(weight))
+```
+3. Boxplot
+```{r}
+ggplot(df, aes(x=group, y=weight)) + 
+  geom_boxplot()
+```
+<br>
+<hr>
+4. Using Anova Function
+```{r}
+ans <-aov(weight~group,data=df)
+summary.aov(ans)
+
+```
+<h3>Conclusion</h3> <br>
+The value of P is less than 0.05 so we reject the Null hypothesis to conclude there is a significant difference between the population means now we check the pair wise to conclude which means differences are significant
+<hr>
+5. Check which pairs contribute to the difference between the means
+```{r}
+TukeyHSD(ans)
+```
+<h3>Conclusion</h3> <br>
+The difference between treatment-1 and treatment-2 is significant with an adjusted p-value of 0.012 as we see can in the results obtained above.
+<hr>
+<h2>Question 2</h2>
+1. Loading the Dataset
+```{r}
+df2=poisons
+df2$poison=as.factor(df2$poison)
+df2$treat=as.factor(df2$treat)
+```
+2.Group Wise Means
+```{r}
+df2 %>%
+  group_by(poison,treat) %>%
+  summarise(mean=mean(time))
+
+```
+3. Boxplot
+```{r}
+ggplot(df2, aes(x=poison, y=time)) + 
+  geom_boxplot()+facet_wrap(df2$treat)
+```
+<br>
+<hr>
+4. Using Anova Function
+```{r}
+ans2 <-aov(time~poison+treat,data=df2)
+summary.aov(ans2)
+
+```
+<h3>Conclusion</h3> <br>
+The value of P is less than 0.05 so we reject the Null hypothesis to conclude there is a significant difference between the population means now we check the pair wise to conclude which means differences are significant
+<hr>
+5. Check which pairs contribute to the difference between the means
+```{r}
+TukeyHSD(ans2)
+plot(TukeyHSD(ans2,conf.level = 0.95),las = 2)
+```
+<h3>Conclusion</h3> <br>
+<ul>
+<li> The Difference Between B-A treat and 3-1 poison is significant</li>
+</ul>
+Time and Date Verification
+```{r}
+Sys.info()
+Sys.time()
+Sys.Date()
+```
+<hr>
+<h2 align="center">Thank You</h2>
+<hr>

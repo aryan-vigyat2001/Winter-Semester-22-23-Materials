@@ -1,0 +1,132 @@
+---
+title: "LAB-5_DV"
+author: "Sudip Roy 20BCE1358"
+date: "2023-01-30"
+output: html_document
+---
+Loading the Required Packages
+```{r}
+library(mlbench)
+library(kernlab)
+library(caTools)
+library(readr)
+library(caret)
+library(pROC)
+library(ggplot2)
+library(ggbiplot)
+library(readr)
+library(MASS)
+```
+1. Loading the Dataset
+```{r}
+BreastCancer<- read_csv("C:/Users/ayuar/Downloads/archive (15).zip")
+# Removing the Variables which are not of use 
+BreastCancer<-BreastCancer[,c(-1,-33)]
+BreastCancer$diagnosis <- as.factor(BreastCancer$diagnosis)
+```
+2. Fit PCA model and Visualizations
+```{r}
+pca_model <- prcomp(BreastCancer[, c(-1)], center = TRUE, scale. = TRUE)
+summary(pca_model)
+ggbiplot(pca_model)
+screeplot(pca_model, type = "l", npcs = 15, main = "Screeplot of the first 15 PCs")
+```
+3. Explain difference between malignant and benign tumors using Visualisation and add the response variable (diagnosis) to the plot
+```{r}
+ggplot(data.frame(pca_model$x), aes(x = PC1, y = PC2,color = as.factor(BreastCancer$diagnosis))) +
+  geom_point() +
+  ggtitle("PCA Plot of Breast Cancer Wisconsin Data") +
+  xlab("PC1") +
+  ylab("PC2") +
+  scale_color_manual(values = c("red", "blue"), name = "Diagnosis", labels = c("Malignant", "Benign"))
+
+```
+<br>
+4. Taking the First 6 Principal Component Values and Constructing the Model
+```{r}
+pc_data <- as.data.frame(pca_model$x[, 1:6])
+pc_data$diagnosis <- BreastCancer$diagnosis
+#Using Support Vector Machine for prediction of diagnosis
+model_svm <- train(diagnosis ~ ., data = pc_data, method = "svmRadial", preProcess = c("center", "scale"), trControl = trainControl(method = "cv", number = 10))
+```
+5. Prediction with the help of model
+```{r}
+#Using the Predict Function to calculate the predicted Values
+pred_svm <- predict(model_svm, newdata = pc_data)
+pred_svm_num <- as.numeric(pred_svm)
+#Factorizing the Value for AUC and ROC Curve
+pred_svm_num[pred_svm_num == "B"] <- 0
+pred_svm_num[pred_svm_num == "M"] <- 1
+```
+6. Plot ROC and calculating AUC
+```{r}
+roc_svm <- roc(pc_data$diagnosis, pred_svm_num, ci = TRUE)
+
+# Plot the ROC curve
+plot(roc_svm, color = "red")
+auc_svm <- auc(roc_svm)
+auc_svm
+
+```
+Conclusions
+<ul>
+<li>The AUC Value is 0.96 which says 96% of the predictions are correct.</li>
+<li>The ROC curve is closer to the top-left corner, indicating good true positive rate and false positive rate trade-off.</li>
+<li>The classifier demonstrates excellent discrimination ability.</li>
+</ul>
+<br>
+7. Confusion Matrix
+```{r}
+cm <- confusionMatrix(pred_svm, pc_data$diagnosis)
+cm
+cm_data <- as.data.frame(confusionMatrix(pred_svm, pc_data$diagnosis)$table)
+ggplot(cm_data, aes(x = Reference, y = Prediction, fill = Freq)) +
+  geom_tile(colour = "white") +
+  scale_fill_gradient(low = "black", high = "red") +
+  xlab("Reference") +
+  ylab("Prediction") +
+  ggtitle("Confusion Matrix Plot")
+```
+Question II
+```{r}
+#PCA FOR IRIS
+data(iris)
+head(iris)
+?prcomp
+
+myPr <- prcomp(iris[, -5])
+myPr <- prcomp(iris[, -5], scale = TRUE)
+plot(iris$Sepal.Length, iris$Sepal.Width)
+plot(scale(iris$Sepal.Length), scale(iris$Sepal.Width))
+plot((iris$Sepal.Length - mean(iris$Sepal.Length)) / sd(iris$Sepal.Length))
+myPr
+summary(myPr)
+plot(myPr, type = "l")
+biplot(myPr)
+biplot(myPr, scale = 0)
+str(myPr)
+myPr$x
+iris2 <- cbind(iris, myPr$x)
+library(ggplot2)
+
+ggplot(iris2, aes(PC1, PC2, col = Species, fill = Species)) +
+  stat_ellipse(geom = "polygon", col = "black", alpha = 0.5) +
+  geom_point(shape = 21, col = "black")
+
+cor(iris[, -5], iris2[, 6:9])
+```
+<h2> LDA </h2>
+```{r}
+library(caTools)
+set.seed(1)
+new_iris<-data.frame(iris)
+data<-sample.split(new_iris, SplitRatio=0.6)
+train=subset(new_iris, data==TRUE) # training set
+test=subset(new_iris, data==FALSE)
+lda.fit<-lda(Species~., data=train) # Using 4 quantitative variables to predict qualitative variable
+cat('Number of observations of each class:')
+lda.fit$count
+cat('Summary:')
+lda.fit
+```
+

@@ -1,0 +1,64 @@
+---
+title: "LAB 2 Data Visualization"
+author: "Aryan Vigyat 20BCE1452"
+date: '2022-12-24'
+output: html_document
+---
+1. Loading the Dataset and Summary
+```{r}
+library(ggplot2)
+data=diamonds
+library(ggplot2)
+library(lattice)
+summary(data)
+```
+2. Bar Plot
+```{r}
+#barplot
+ggplot(data=data, aes(x=carat)) + geom_bar()+ggtitle("Bar Plot of Carat")
+```
+3. Dot Chart
+```{r}
+#dotchart
+dotchart(data$depth, labels=row.names(data), cex=1, xlab="Price",main="DotPlot for Depth")
+```
+4. Histogram
+```{r}
+#histogram
+histogram(~price, data = data,main="Plot for Price")
+```
+5. Density Plot
+```{r}
+densityplot(~table, data = data)
+```
+6. Box and Whiskers Plot
+```{r}
+bwplot(~carat, data=data)
+```
+7. ScatterPlot Matrix
+```{r}
+subset <- data[ , 5:9] 
+splom(~subset[ , 1:3])
+```
+8. XYPlot 
+```{r}
+#xyplot
+xyplot(depth~table, data = data,main="XY plot for Depth and Table")
+```
+9. Time Series Plot with Lattice
+```{r}
+xyplot(x + y + z + table ~price, data = data)
+```
+10. 3D lattice Plot
+```{r}
+cloud(price ~ x*y, data = data)
+```
+11. ParallelPlot
+```{r}
+parallel(~data[,5:9]|color, data = data, layout=c(3,1))
+```
+
+
+
+
+

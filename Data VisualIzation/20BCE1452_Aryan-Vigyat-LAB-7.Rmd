@@ -1,0 +1,162 @@
+---
+title: "Lab 6 EDA ARIMA MODEL"
+author: "Aryan Vigyat 20BCE1452"
+date: "2023-02-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Attaching the libraries
+
+```{r}
+library(forecast)
+```
+1. Write R script to perform the following and analyse the performance using RMSE and MAPE:
+```{r}
+year <- c(1,2,3,4,5,6,7,8,9,10,11,12)
+Sales <- c(5.2,4.9,5.5,4.9,5.2,5.7,5.4,5.8,5.9,6,5.2,4.8)
+df <- data.frame(year, Sales)
+summary(df)
+head(df)
+```
+
+```{r}
+for(i in (4:12)) {
+  rolling_average <- c((df$Sales[i-1]+df$Sales[i-2]+df$Sales[i-3])/3)
+  df$Rolling_Average_Sales[i] <- rolling_average
+}
+df
+```
+
+```{r}
+#Calculating the Square Error
+df$sq_error <- (df$Sales-df$Rolling_Average_Sales)^2
+df
+```
+```{r}
+#Calculating the Root Mean Square Error
+RMSE <- sqrt(mean(df$sq_error, na.rm=TRUE))
+RMSE
+```
+```{r}
+#Absolute Percentage Error
+df$APE <- abs((df$Sales-df$Rolling_Average_Sales)/df$Sales)*100
+df
+```
+```{r}
+#Mean Absolute Percentage Error
+MAPE <- mean(df$APE, na.rm=TRUE)
+MAPE
+```
+<h2> Weighted Moving Average</h2>
+```{r}
+df_new <- data.frame(year, Sales)
+head(df_new)
+```
+```{r}
+weights <- c(1,2,1)
+for(x in 4:12)
+{
+  aux <- (weights[3]*df_new$Sales[x-1]+weights[2]*df_new$Sales[x-2]+weights[1]*df_new$Sales[x-3])/sum(weights)
+df_new$SalesPred[x] <- aux
+}
+df_new
+```
+
+```{r}
+#For Calculating Square Error
+df_new$sq_error <- (df_new$Sales-df_new$SalesPred)^2
+df_new
+```
+```{r}
+#For Calculating Mean Square Error
+RMSE <- sqrt(mean(df_new$sq_error, na.rm=TRUE))
+RMSE
+```
+```{r}
+#For Calculating Absolute Percentage Error
+df_new$APE <- abs((df_new$Sales-df_new$SalesPred)/df_new$Sales)*100
+df_new
+```
+```{r}
+#For Calculating Mean Absolute Percentage
+MAPE <- mean(df_new$APE, na.rm=TRUE)
+MAPE
+```
+<h2> Exponential Smoothing Forecast with Alpha =0.3
+```{r}
+df3 <- data.frame(year,Sales)
+head(df3)
+```
+```{r}
+#For Calculating the Sales Prediciton
+df3$SalesPred[1]=df3$Sales[1]
+for (x in 2:12) 
+{
+  aux=0.3*df3$Sales[x-1]+0.7*df3$SalesPred[x-1]
+  df3$SalesPred[x]=aux
+}
+df3
+#For Calculating The Square Error
+df3$sq_error <- (df3$Sales-df3$SalesPred)^2
+df3
+#For Calculating the Root Mean Square Value
+RMSE <- sqrt(mean(df3$sq_error, na.rm=TRUE))
+RMSE
+#For Calculating the Absolute Percentage Error
+df3$APE <- abs((df3$Sales-df3$SalesPred)/df3$Sales)
+df3
+```
+<h2> 2nd Question </h2>
+Perform Time series Forecasting using ARIMA model:
+a. Month-wise highest price/gm of Gold in India from Jan-2018 to Dec-2020
+```{r}
+price <- c(3016, 3044, 3041, 3121, 3111, 3043, 2977, 3036, 3051, 3191, 3016, 3164, 3321, 3338, 3170, 3194, 3212, 3420, 3465, 3866, 3774, 3858, 3807, 3922, 4105, 4141, 4383, 4587, 4656, 4864, 5373, 5179, 5068, 5071, 4814, 5024)
+class(price)
+length(price)
+priceTs <- ts(price, start=c(2018,1), end=c(2020,12), frequency=12)
+class(priceTs)
+#Checking the Trends
+plot(priceTs)
+#Checking the Distribution of Cycles
+boxplot(priceTs~cycle(priceTs))
+#Checking for Seasonality
+seasonplot(priceTs)
+#Checking for AutoCorrlation
+acf(priceTs)
+#Checking for Partial Auto-correlation
+pacf(priceTs,lag=length(priceTs), pl=TRUE)
+```
+
+```{r}
+fit2 <- auto.arima(priceTs)
+accuracy(fit2)
+```
+<h2> Apply ARIMA model on any customised relevant dataset like weather dataset, GDP, stock analysis etc.
+</h2>
+```{r}
+adani <- read.csv("C:/Users/ayuar/Downloads/adani.csv")
+price <- adani$open
+class(price)
+head(adani)
+```
+Applying Time Forecast
+```{r}
+priceTs <- ts(price, start=c(2018,1), end=c(2020,12), frequency=12)
+#Checking for Price Trends
+plot(priceTs)
+#Checking the Distribution of Cycles
+boxplot(priceTs~cycle(priceTs))
+#Checking for Seasonality
+seasonplot(priceTs)
+#Checking for AutoCorrlation
+acf(priceTs)
+#Checking for Partial Auto-correlation
+pacf(priceTs,lag=length(priceTs), pl=TRUE)
+```
+
+
+

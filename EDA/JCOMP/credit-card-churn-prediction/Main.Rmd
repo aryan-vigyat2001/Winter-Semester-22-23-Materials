@@ -1,0 +1,280 @@
+---
+title: "Main"
+author: "Manvik Sreedath 20BCE1479"
+date: "2023-03-19"
+output: html_document
+---
+
+```{r}
+df=read.csv("credit_card_churn.csv")
+
+#Removing last 2 columns of naive bayes
+df=df[,-c(22,23)]
+summary(df)
+head(df)
+
+#No missing values
+sum(is.na(df))
+
+#Convert Existing Customers to 1 and Attritued to 0
+df$Attrition_Flag=ifelse(df$Attrition_Flag=="Existing Customer",1,0)
+```
+
+Proportion of Attrition in data
+```{r}
+library(ggplot2)
+
+ggplot(df, aes(x = as.factor(Attrition_Flag))) + 
+  geom_bar(aes(fill=as.factor(Attrition_Flag))) +
+  labs(title = "Count of attrition flag in train data") +
+  theme(plot.title = element_text(size = 20, face = "bold"))
+
+```
+Observations<br>
+Attrited Customer is in low number then existing customer (around 7 times)<br>
+
+It can be considered as the case of imbalanced dataset<br>
+
+
+<h4>Distribution</h4>
+```{r}
+cont_cols <- names(df)[sapply(df, is.numeric)]
+
+#Removing CLIENTNUM field
+cont_cols = cont_cols[-1]
+
+for (i in cont_cols) {
+  print(ggplot(df, aes(x = i)) +
+    geom_bar() +
+    labs(title = paste("Distribution of data for", i)) +
+    theme_minimal() +
+    theme(plot.title = element_text(size = 20, face = "bold")))
+}
+```
+
+Outliers In Customer Age
+```{r}
+boxplot(df['Customer_Age'])
+
+#Removing outlier where age>68 and setting it to mean age
+df$Customer_Age[df$Customer_Age > 68] <- mean(df$Customer_Age, na.rm = TRUE)
+ggplot(df, aes(y = Customer_Age)) +
+  geom_boxplot(fill = "blue") +
+  labs(title = "Boxplot of Customer Age") +
+  theme(plot.title = element_text(size = 20, face = "bold"))
+```
+Outliers in Card Category
+```{r}
+ggplot(df, aes(x = Card_Category,fill=as.factor(Card_Category))) +
+  geom_bar() +
+  labs(title = "Card category counts") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 20, face = "bold"))
+
+#Platinum and Gold are the outliers
+#Imputing 'Gold' & 'Platinum' Card_Category with the 'Silver' Card_Category.
+df$Card_Category <- ifelse(df$Card_Category == "Gold" | df$Card_Category == "Platinum","Silver",
+                              df$Card_Category)
+ggplot(df, aes(x = Card_Category,fill=as.factor(Card_Category))) +
+  geom_bar() +
+  labs(title = "Card category counts") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 20, face = "bold"))
+ggplot(df, aes(x = Gender, fill = as.factor(Attrition_Flag))) +
+  geom_bar(position = "dodge") +
+  scale_fill_manual(values = c("#4F788C", "#8C4F78")) +
+  labs(x = NULL, y = NULL, fill = NULL) +
+  theme_classic() +
+  ggtitle("Gender vs Churn") +
+  theme(plot.title = element_text(size = 17, face = "bold"), axis.text = element_text(size = 14))
+
+ggplot(df, aes(x=as.factor(Education_Level), fill=as.factor(Attrition_Flag))) +
+  geom_bar(position="dodge", stat="count") +
+  scale_fill_manual(values=c("#4F788C","#8C4F78")) +
+  labs(title="Education level vs Churn", x="Education Level", y="Count", fill="Attrition Flag") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, size = 9, face = "bold"),
+        axis.title = element_text(size = 9, face = "bold"),
+        axis.text = element_text(size = 10),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 9))
+ggplot(df, aes(x = as.factor(Marital_Status), fill = as.factor(Attrition_Flag))) +
+  geom_bar(position = "dodge") +
+  scale_fill_manual(values = c("#4F788C","#8C4F78")) +
+  labs(title = "Marital status vs Churn", x = "Marital Status", y = "Count") +
+  theme(plot.title = element_text(size = 17, hjust = 0.5),
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 10),
+        axis.text.x = element_text(angle = 90, hjust = 1))
+```
+Splitting Data
+```{r}
+library(caTools)
+set.seed(123321)
+df[sapply(df, is.character)] <- lapply(df[sapply(df, is.character)], as.factor)
+split=sample.split(df,SplitRatio = 0.8)
+train=subset(df,split=="TRUE")
+test=subset(df,split=="FALSE")
+head(train)
+```
+<h3>XGBoost</h3>
+```{r}
+library(xgboost)
+library(pROC)
+# Convert data to DMatrix format and using most important features
+dtrain <- xgb.DMatrix(data = as.matrix(train[,c(11,15,17:20)]), label = train$Attrition_Flag)
+dtest <- xgb.DMatrix(data = as.matrix(test[,c(11,15,17:20)]), label = test$Attrition_Flag)
+
+# Define parameters for XGBoost model
+params <- list(
+  objective = "binary:logistic",
+  eval_metric = "auc",
+  min_child_weight = 1,
+  max_depth = 6,
+  eta = 0.1,
+  subsample = 0.8,
+  colsample_bytree = 0.7
+)
+
+# Train XGBoost model
+model <- xgb.train(
+  params = params,
+  data = dtrain,
+  nrounds = 1000,
+  verbose = FALSE
+)
+
+predictions <- predict(model, dtest)
+binary.predictions <- ifelse(predictions > 0.5, 1, 0)
+accuracy <- sum(binary.predictions == test$Attrition_Flag) /  length(test$Attrition_Flag)
+print(paste("Accuracy = ",accuracy))
+# Generate predicted probabilities
+y_pred_prob <- predict(model, dtest)
+
+# Compute ROC and AUC
+roc_obj <- roc(test$Attrition_Flag, y_pred_prob)
+auc_val <- auc(roc_obj)
+
+# Plot ROC curve
+plot(roc_obj, main = paste("ROC Curve (AUC = ", round(auc_val, 3), ")"))
+
+```
+<h3>Logistic Regression</h3>
+```{r}
+
+model=glm(Attrition_Flag~Customer_Age+Dependent_count+Months_on_book+Total_Relationship_Count+Months_Inactive_12_mon+Contacts_Count_12_mon+Credit_Limit+Total_Revolving_Bal+Avg_Open_To_Buy+Total_Amt_Chng_Q4_Q1+Total_Trans_Amt+Total_Trans_Ct+Total_Ct_Chng_Q4_Q1+Avg_Utilization_Ratio,data=train,family="binomial")
+model
+
+#Predict
+predicted=predict(model,test,type="response")
+#Change probabilites
+predicted=ifelse(predicted>0.5,1,0)
+head(predicted)
+
+#Model Accuracy
+table(test$Attrition_Flag,predicted)
+classerr=mean(predicted!=test$Attrition_Flag)
+paste("Accuracy is ",1-classerr)
+
+#ROC AUC curve
+library(pROC)
+roc_obj <- roc(test$Attrition_Flag, predicted)
+plot(roc_obj, main = "ROC Curve", col = "blue", lwd = 2, print.auc = TRUE)
+
+# Get the predicted probabilities for the test set
+probs <- predict(model, test, type = "response")
+
+# Plot the distribution of the predicted probabilities
+hist(probs, main = "Predicted Probability Distribution", xlab = "Probability", ylab = "Frequency", col = "lightblue")
+
+
+```
+
+
+
+
+<h3> Decision Tree</h3>
+```{r}
+library(party)
+#train[sapply(train, is.character)] <- lapply(train[sapply(train, is.character)], as.factor)
+#test[sapply(test, is.character)] <- lapply(test[sapply(test, is.character)], as.factor)
+classifier_cl <- ctree(as.factor(Attrition_Flag)~.,data=train)
+
+#Fitting Decision Tree Model to training dataset
+plot(classifier_cl)
+
+# Predicting on test data'
+y_pred <- predict(classifier_cl, newdata = test)
+ 
+# Confusion Matrix
+cm <- table(test$Attrition_Flag, y_pred)
+cm
+
+# Model Evaluation
+#confusionMatrix(cm)
+
+#Accuracy
+accuracy = mean(y_pred!=test$Attrition_Flag)
+accuracy = 1 - accuracy
+print(paste('Accuracy of the model = ',accuracy))
+```
+<h3>Random Forest</h3>
+```{r}
+library(randomForest)
+
+set.seed(123321)
+model_rf=randomForest(x=train[-c(1,2)],y=as.factor(train$Attrition_Flag),ntree=500)
+model_rf
+
+# Predicting the Test set results
+y_pred = predict(model_rf, newdata = test[-c(1,2)])
+
+# Confusion Matrix
+confusion_mtx = table(test[, 2], y_pred)
+#confusion_mtx
+
+# Plotting model
+plot(model_rf)
+
+# Predict on test data with class labels
+y_pred_class = predict(model_rf, newdata = test[-c(1,2)])
+
+# Compute accuracy
+accuracy = mean(y_pred_class == test$Attrition_Flag)
+print(paste("Accuracy: ", round(accuracy * 100, 2), "%"))
+
+  
+# Importance plot
+importance(model_rf)
+
+# Predict on test data with class probabilities
+y_pred_prob <- predict(model_rf, newdata = test[-c(1,2)], type = "prob")[, 2]
+
+# Compute ROC and AUC
+library(pROC)
+roc_obj <- roc(test$Attrition_Flag, y_pred_prob)
+auc_val <- auc(roc_obj)
+
+# Plot ROC curve
+plot(roc_obj, main = paste("ROC Curve (AUC = ", round(auc_val, 3), ")"))
+
+```
+<h3>AdaBoost </h3>
+```{r}
+library(adabag)
+train$Attrition_Flag=as.factor(train$Attrition_Flag)
+model_adaboost <- boosting(Attrition_Flag~., data=train, boos=TRUE, mfinal=50)
+summary(model_adaboost)
+
+#Make Predictions
+pred_test=predict(model_adaboost,test)
+cm <- confusionMatrix(as.factor(pred_test$class), as.factor(test$Attrition_Flag))
+accuracy <- cm$overall[1]
+print(paste("Accuracy: ", round(accuracy * 100, 2), "%"))
+# Compute ROC and AUC
+roc_obj = roc(test$Attrition_Flag, pred_test$prob[, 2])
+auc_val = auc(roc_obj)
+
+# Plot ROC curve
+plot(roc_obj, main = paste("ROC Curve (AUC = ", round(auc_val, 3), ")"))
+```

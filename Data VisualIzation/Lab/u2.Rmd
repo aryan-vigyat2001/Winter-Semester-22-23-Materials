@@ -1,0 +1,172 @@
+---
+title: "Data Visualization Lab 7"
+author: "Aryan Vigyat"
+date: "2023-02-09"
+output:
+  html_document: default
+  pdf_document: default
+---
+Loading the Libraries Neeeded
+```{r}
+library(igraph)
+```
+1. Loading the Graoh with Adjacency Matrix
+```{r}
+dat=read.csv(file.choose(),header=TRUE,sep=',', row.names=1,check.names=FALSE)
+m=as.matrix(dat)
+net=graph.adjacency(m,mode="directed",weighted=TRUE,diag=FALSE)
+V(net)$color <- "yellow"
+V(net)$number <- sample(1:50, vcount(net), replace=TRUE)
+V(net)[ number < 20 ]$color <- "lightblue"
+
+E(net)$weight <- runif(ecount(net))
+E(net)$width <- 1
+E(net)$color <- "red"
+E(net)[ weight < 0.5 ]$width <- 4
+E(net)[ weight < 0.5 ]$color <- "brown"
+plot(net, layout = layout.fruchterman.reingold,vertex.label=V(net)$number)
+```
+<br>
+2. Loading the Graph with EdgeList
+```{r}
+e1=read.table(file.choose(),sep=",",header=T)
+g2 <- graph.data.frame(e1)
+V(g2)$number=sample(1:50, vcount(g2), replace=TRUE)
+V(g2)$color="yellow"
+V(g2)[ number < 20 ]$color <- "lightblue"
+E(g2)$weight <- runif(ecount(g2))
+E(g2)$width <- 1
+E(g2)$color <- "red"
+E(g2)[ weight < 0.5 ]$width <- 4
+E(g2)[ weight < 0.5 ]$color <- "brown"
+plot(g2, layout = layout.fruchterman.reingold,vertex.label=V(g2)$number)
+```
+<br>
+3. Display the edges & vertices, the network as matrix and the names of vertices
+```{r}
+#For Graph 1
+get.edgelist(net)
+get.adjacency(net)
+#For Graph 2
+get.edgelist(g2)
+get.adjacency(g2)
+```
+4. Find the count of vertices and edges of the created graph
+```{r}
+#For Graph 1
+print(vcount(net))
+print(ecount(net))
+#For Graph 2
+print(vcount(g2))
+print(ecount(g2))
+```
+5. Display the adjacency vertices of each vertex(individual) in the created graph
+```{r}
+#For Graph 1
+for (i in 1:vcount(net)) {
+  # get the adjacent vertices of each vertex
+  adj_vertices <- neighbors(net, i)
+  
+  # print the vertex and its adjacent vertices
+  cat("Vertex", i, "has the following neighbouring vertices:", adj_vertices, "\n")
+}
+#For Graph 2
+for (i in 1:vcount(g2)) {
+  # get the adjacent vertices of each vertex
+  adj_vertices <- neighbors(g2, i)
+  
+  # print the vertex and its adjacent vertices
+  cat("Vertex", i, "has the following neighbouring vertices:", adj_vertices, "\n")
+}
+
+```
+<br>
+6.Find the min and max degree of the created graph
+```{r}
+#For Graph 1
+vertex_degrees <- degree(net)
+
+# find the minimum and maximum degree
+min_degree <- min(vertex_degrees)
+max_degree <- max(vertex_degrees)
+
+# print the minimum and maximum degree
+cat("The minimum degree is", min_degree, "\n")
+cat("The maximum degree is", max_degree, "\n")
+
+#For Graph 2
+vertex_degrees <- degree(g2)
+
+# find the minimum and maximum degree
+min_degree <- min(vertex_degrees)
+max_degree <- max(vertex_degrees)
+
+# print the minimum and maximum degree
+cat("The minimum degree is", min_degree, "\n")
+cat("The maximum degree is", max_degree, "\n")
+
+
+```
+<br>
+7. Create & set vertex attribute property named profit and values("+", "-", "+", "-", "+", "-",
+"+", "-", "+")
+
+```{r}
+
+vertex_attributes <- c("+", "-", "+", "-", "+", "-", "+", "-", "+")
+
+# set the vertex attributes as the "profit" property
+set_vertex_attr(g2, "profit", value = vertex_attributes)
+
+# check the vertex attributes
+summary(g2)
+```
+<br>
+8. Create & set vertex attribute property named type and values(either leap or non-leap year)
+```{r}
+V(g2)$name <- as.numeric(V(g2)$name)
+V(g2)$type = ifelse(V(g2)$name %% 4 == 0, "Leap", "Non-Leap")
+V(g2)$type
+
+```
+<br>
+9.Create & set edge attribute named weight and values (if edge exits in between leap year
+vertices then 5 else 1 )
+```{r}
+E(g2)$weight <- as.numeric(ifelse(all(V(g2)$type == "Leap"), 5, 1))
+print(E(g2)$weight)
+
+
+```
+<br>
+10. Convert the created un-directed graph into directed graph based on the following rule
+a. edge directed towards high value vertex
+```{r}
+dg = as.directed(g2, mode = "arbitrary")
+plot(dg,layout=layout.circle)
+
+```
+<br>
+12. Display the adjacency matrix of the resultant directed graph
+```{r}
+
+E(dg, P=NULL, path=NULL, directed=TRUE)
+
+```
+<br>
+
+13. Display the in-degree and out-degree of each vertex of resultant directed graph
+```{r}
+
+indegree <- degree(dg, mode = "in")
+outdegree <- degree(dg, mode = "out")
+
+# Combine the indegree and outdegree into a data frame
+df <- data.frame(vertex = V(dg)$name, indegree = indegree, outdegree = outdegree)
+
+# Display the result
+print(df)
+
+```
+
+

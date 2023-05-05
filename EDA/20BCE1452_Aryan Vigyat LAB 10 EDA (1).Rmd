@@ -1,0 +1,78 @@
+---
+title: "Lab-10 Essentials of Data Analytics"
+author: "Aryan Vigyat 20BCE1452"
+date: "`r Sys.Date()`"
+output: html_document
+---
+Attaching all the Libraries
+```{r}
+library(cluster)
+library(factoextra)
+```
+
+Loading the  Dataset
+```{r}
+df=read.csv("USArrests.csv")
+head(df,10)
+summary(df)
+df <- na.omit(df)
+df <- scale(df[2:5])
+```
+1. Finding Optimal Number Clusters using Elbow Method
+```{r}
+set.seed(123)
+fviz_nbclust(df, kmeans, method = "wss")
+```
+2. Apply K-Means Clustering Using k=4
+```{r}
+set.seed(123)
+model <- kmeans(df, centers = 4)
+model
+```
+3. Visualizing all the clusters using the Cluster Plot
+```{r}
+fviz_cluster(model, data = df)
+```
+<h4>K-Medoids</h4>
+```{r}
+fviz_nbclust(df, pam, method = "wss")
+```
+4. Applying K-medoids Algorithmn with k=4
+```{r}
+set.seed(123)
+model1 <- pam(df, k = 4)
+model1
+```
+5. Visualizing the clusters using cluster plot
+```{r}
+fviz_cluster(model1, data = df)
+```
+<br>
+<h2>Hierarchical Clustering</h2>
+
+```{r}
+dist_matrix <- dist(df, method = 'euclidean')
+
+set.seed(123)  
+model2 <- hclust(dist_matrix, method = "average")
+model2
+plot(model2)
+#abline(h = 2, col = "green")
+```
+
+Choosing no. of clusters, Cutting tree by number of clusters
+```{r}
+optimum <- cutree(model2, k = 4 )
+optimum
+table(optimum)
+plot(model2)
+rect.hclust(model2, k = 4, border = "green")
+```
+Time and Date Verification
+```{r}
+Sys.info()
+Sys.time()
+Sys.Date()
+```
+<hr>
+<h2 align="center">Thank You</h2>

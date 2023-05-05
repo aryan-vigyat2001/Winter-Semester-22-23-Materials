@@ -1,0 +1,154 @@
+---
+title: "LAB 6 Data Visualization"
+author: "Aryan Vigyat 20BCE1452"
+date: "2023-02-04"
+output: html_document
+---
+<h2>Question 1</h2>
+1. Loading the Covid Dataset 
+```{r}
+library(readr)
+library(TTR)
+library(ggplot2)
+states <- read.csv("C:/Users/ayuar/Downloads/states.csv")
+```
+2. Data Preprocessing
+```{r}
+states=states[complete.cases(states),]
+states=states[states$State=="India",]
+states=states[states$Tested!=0,]
+states$Negative=states$Tested-states$Confirmed
+states$Date <- as.Date(states$Date)
+states$Confirmed<-c(states$Confirmed[1], diff(states$Confirmed))
+states$Tested<-c(states$Tested[1], diff(states$Tested))
+states$Recovered<-c(states$Recovered[1], diff(states$Recovered))
+states$Negative<-c(states$Negative[1], diff(states$Negative))
+states$Decreased<-c(states$Deceased[1], diff(states$Deceased))
+states$Deceased<-NULL
+states$Other<-c(states$Other[1], diff(states$Other))
+states=states[states$Tested!=0,]
+```
+3. Finding Weekly and Monthly Trends
+```{r}
+library(dplyr)
+covid_data_weekly <- states %>% 
+  mutate(week = floor((as.numeric(Date) - as.numeric(min(Date))) / 7)) %>% 
+  group_by(week) %>% 
+  summarize(Confirmed = sum(Confirmed),
+            Negative = sum(Negative),
+            Recovered = sum(Recovered),
+            Decreased = sum(Decreased))
+covid_data_monthly <- states %>% 
+  mutate(month = format(as.Date(Date), "%m"))%>% 
+  group_by(month) %>% 
+  summarize(Confirmed = sum(Confirmed),
+            Negative = sum(Negative),
+            Recovered = sum(Recovered),
+            Decreased = sum(Decreased))
+
+```
+<br>
+4. Identifying the Death Rate and Plotting the Weekly and Monthly Trends
+```{r}
+covid_data_monthly$death_rate <- covid_data_monthly$Decreased / (covid_data_monthly$Confirmed + covid_data_monthly$Negative)
+covid_data_weekly$death_rate <- covid_data_weekly$Decreased / (covid_data_weekly$Confirmed + covid_data_weekly$Negative)
+weeklyts<-ts(covid_data_weekly)
+monthlyts<-ts(covid_data_monthly)
+plot.ts(weeklyts)
+plot.ts(monthlyts)
+```
+<br>
+5. Finding the Exponential Moving Average
+```{r}
+timeseries_ts<-ts(states$Confirmed)
+timeseries_ema <- EMA(timeseries_ts, alpha = 0.4)
+plot(timeseries_ema)
+
+
+```
+<br>
+6. ARIMA Model
+```{r}
+library(forecast)
+arima<- auto.arima(ts(states$Confirmed))
+arima_predictions <- forecast(arima, h = 12)
+plot(arima_predictions)
+
+```
+<br>
+<h2> Question 2</h2>
+
+1. Loading the Dataset
+```{r}
+library(readr)
+Apple <- read_csv("C:/Users/ayuar/Downloads/AAPL(Apple).csv")
+View(Apple)
+```
+2. Convert into Time Series Dataset
+```{r}
+appletimeseries <- ts(Apple$Open, start = c(2013, 1), frequency = 405)
+plot.ts(appletimeseries)
+```
+3. Log of timeSeries Plot
+```{r}
+logappletimeseries <- log(appletimeseries)
+plot.ts(logappletimeseries)
+```
+4. Simple Moving Average
+```{r}
+library("TTR")
+appleSMA3 <- SMA(appletimeseries,n=3)
+plot.ts(appleSMA3,ylab="High")
+```
+5. Weighted Moving Average
+```{r}
+appleWMA3<-WMA(appletimeseries,n=4,wts=c(1,4,3,1), na.rm = TRUE)
+library(ggplot2)
+valid_indices <- (4-1)/2:(length(appletimeseries) - (4-1)/2)
+library(zoo)
+
+# Plot the original time series data and the weighted moving average
+df_appletimeseries <- data.frame(time = time(appletimeseries), value = coredata(appletimeseries))
+ggplot(data = df_appletimeseries, mapping = aes(x = time, y = value)) +
+  geom_line(color = "red") +
+  geom_line(data = df_appletimeseries[valid_indices, ], 
+            mapping = aes(x = time, y = appleWMA3[valid_indices]), 
+            color = "blue") +
+  ggtitle("Weighted Moving Average") +
+  xlab("Time") +
+  ylab("Value")
+```
+<br>
+6. Arima Model
+```{r}
+library(forecast)
+library(forecast)
+
+# Fit the ARIMA model
+fit <- auto.arima(appletimeseries)
+
+# Plot the residuals of the ARIMA model
+plot(residuals(fit), main = "ARIMA Model Residuals", xlab = "Index", ylab = "Residual")
+
+# Plot the ACF and PACF of the residuals
+Acf(residuals(fit), main = "ACF of ARIMA Model Residuals")
+Pacf(residuals(fit), main = "PACF of ARIMA Model Residuals")
+
+# Plot the ARIMA model forecast
+plot(forecast(fit), main = "ARIMA Model Forecast", xlab = "Index", ylab = "Value")
+arima_predictions <- forecast(fit, h = 12)
+plot(arima_predictions)
+
+```
+
+7. Seasonal Arima
+```{r}
+arima_model <- auto.arima(appletimeseries, seasonal = TRUE)
+
+# Make predictions using the ARIMA model
+arima_predictions <- forecast(arima_model, h = 12)
+
+# Plot the original time series data and the ARIMA predictions
+plot(arima_predictions)
+```
+

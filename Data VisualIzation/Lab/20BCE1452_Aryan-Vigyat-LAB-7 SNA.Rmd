@@ -1,0 +1,68 @@
+---
+title: "Lab 7 Data Visualization SNA"
+author: "Aryan Vigyat 20BCE1452"
+date: "2023-02-13"
+output: html_document
+---
+
+Attaching the Libraries
+```{r}
+library(sna)
+library(igraph)
+```
+
+1. Import and load the dataset and view information about it using str() function.
+
+```{r}
+df <-read.csv("~/socialnetworkdata.csv")
+data <- data.frame(df$first,df$second)
+str(data)
+```
+2. Create the graph network using graph.data.frame() function.
+```{r}
+graph <- graph.data.frame(data)
+V(graph)
+E(graph)
+igraph::degree(graph)  
+igraph::betweenness(graph)
+V(graph)$label <- V(graph)$name 
+V(graph)$degree <- igraph::degree(graph)
+```
+3. Plot the Histogram graph For Node Degrees.
+```{r}
+hist(V(graph)$degree,main='Histogram of node degree',xlab='Degree of vertices',ylab='Frequency')
+```
+4. Plot the Network Graph Diagram.
+```{r}
+plot(graph,vertex.label.cex=0.7,vertext.size=2,edge.arrow.size=0.1)
+```
+<br>
+5. Compute the hub and authority scores and depict the vertices with maximum hub and authority in the network diagram.
+```{r}
+hs <- hub_score(graph)$vector
+hs
+as <- authority.score(graph)$vector
+as
+```
+
+```{r}
+plot(graph,vertex.size=hs*30,main='Hubs',edge.arrow.size=0.1,layout=layout.fruchterman.reingold)
+```
+
+```{r}
+
+plot(graph,vertex.size=as*30,main='Authorities',edge.arrow.size=0.1,layout=layout.fruchterman.reingold)
+```
+<br>
+6. Find out the communities present in the network.
+```{r}
+network <- graph.data.frame(data,directed=F)
+cnetwork <- cluster_edge_betweenness(network)
+plot(cnetwork,network,vertex.label.cex=0.7)
+```
+```{r}
+# (vii) Conclusion
+
+#In social network research, the SNA and igraph packages in R were utilized to analyze a dataset with network data involving different nodes. By computing the hub and authority scores of each node, a network diagram was created. The identification of communities in the network revealed that nodes within the same group were highly connected, while nodes between different groups were only weakly connected.
+```
+

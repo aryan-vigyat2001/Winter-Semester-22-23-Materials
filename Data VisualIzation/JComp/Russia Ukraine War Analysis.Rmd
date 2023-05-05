@@ -1,0 +1,328 @@
+---
+title: "Russia Ukraine War Analysis"
+author: "Manvik Sreedath, Aryan Vigyat, Kartik Deepu"
+date: "2023-02-18"
+output: html_document
+---
+Importing Dataset
+```{r}
+library(ggplot2)
+library(reshape2)
+df1=read.csv("russia_losses_equipment.csv")
+df2=read.csv("russia_losses_equipment_correction.csv")
+df3=read.csv("russia_losses_personnel.csv")
+head(df1)
+summary(df1)
+head(df2)
+summary(df2)
+head(df3)
+summary(df3)
+```
+Data Cleaning
+```{r}
+#Change date datatype
+df1$date <- as.Date(df1$date, "%Y-%m-%d")
+df3$date <- as.Date(df3$date, "%Y-%m-%d")
+
+#Merge by inner join
+dt <- merge(df1, df3, by = "date", all = TRUE)
+
+#Combine columns
+
+for (i in 1:nrow(dt))
+  {
+    if (is.na(dt$vehicles.and.fuel.tanks[i])==FALSE) next
+      else {
+         dt$vehicles.and.fuel.tanks[i] = dt$military.auto[i] + dt$fuel.tank[i]
+          }
+  }
+
+for (i in 1:nrow(dt)) 
+  {
+   dt$air_vehicles[i] = dt$aircraft[i] + dt$helicopter[i]
+  }
+
+#Remove columns that are not useful
+dt <- subset(dt, select= -c (personnel., military.auto, fuel.tank, helicopter,aircraft))
+
+#Set NA to 0 in mobile SRBM system
+dt$mobile.SRBM.system[is.na(dt$mobile.SRBM.system)] <- 0 
+
+#Replace NA with maxmimum in POW
+dt$POW[is.na(dt$POW)] <- 496
+
+# Replace any other NA present with 0
+dt[is.na(dt)] <- 0
+write.csv(dt,"newdf.csv")
+```
+
+Visualizing Loss of Equipment
+```{r}
+library(dplyr)
+library(reshape2)
+library(ggplot2)
+#Air 
+melt_air <- dt %>% dplyr::select(c("air_vehicles", "drone", "date"))
+melt_air <- melt(melt_air, id = "date")
+
+options(repr.plot.width = 18, repr.plot.height = 8)
+ggplot(melt_air, aes(x = date, y = value, color = variable)) +  
+  geom_line(size=1.8)+
+  scale_x_date(date_breaks='2 months', date_label = "%b")+
+  geom_text(data = subset(melt_air, date==max(dt$date)), aes(label=value),hjust=2,vjust=0, size=4)+
+  labs(title="Air-based Equipment Loss", color=NULL)+
+  theme(title= element_text(face="bold", hjust=4, size=20), 
+        axis.text.x = element_text(size=12),
+        axis.text.y = element_text(size=12),
+        legend.position = "bottom",
+        legend.text = element_text(size=14),
+        panel.grid=element_line(size=0.4, color="gray", linetype=2))+
+  scale_color_manual(values = c("orange2", "orange4"),
+                     labels= c("Aircraft & Helicopter", "Drones"))
+
+# Water
+melt_water <- dt %>% dplyr::select(c("naval.ship", "cruise.missiles", "date"))
+melt_water <- melt(melt_water, id="date")
+
+options(repr.plot.width=18, repr.plot.height=10)
+ggplot(melt_water, aes(x=date,y=value, color=variable))+
+  geom_line(size=1.8)+
+  scale_y_continuous( limits = c(0, max(melt_water$value)), breaks= seq(0,max(melt_water$value),by=50))+
+  scale_x_date(date_breaks='2 months', date_label = "%b")+
+  geom_text(data = subset(melt_water, date==max(dt$date)),
+            aes(label=value,hjust=2,vjust=0),
+            size=4)+
+  labs(title="Water-based Equipment Loss", color=NULL)+
+  theme(title= element_text(face="bold", hjust=4, size=20), 
+        axis.text.x = element_text(size=12),
+        axis.text.y = element_text(size=12),
+        legend.position = "top",
+        legend.text = element_text(size=14),
+        panel.grid=element_line(size=0.4, color="gray", linetype=2))+
+  scale_color_manual(values = c("orange3", "red"),
+                     labels= c("Naval Ship", "Cruise Missiles"))
+
+# Field
+library(viridis)
+melt_field<- dt %>% dplyr::select(c("tank", "APC", "field.artillery","MRL","anti.aircraft.warfare","vehicles.and.fuel.tanks","date"))
+melt_field <- melt(melt_field, id="date")
+
+options(repr.plot.width=18, repr.plot.height = 12)
+ggplot(melt_field, aes(x=date,y=value, color=variable))+
+  geom_line(size=1)+
+  geom_text(data = subset(melt_field, date==max(dt$date)),
+            aes(label=value,hjust=1,vjust=-0.5), 
+            size=4)+
+  labs(title="Field-based Equipment Loss",color=NULL)+
+  scale_y_continuous( limits = c(0, max(melt_field$value)), breaks= seq(0,max(melt_field$value),by=500))+
+  scale_x_date(date_breaks= "2 months", date_label = "%b")+
+  theme(title= element_text(face="bold", hjust=-0.5, size=20),
+        axis.text.x = element_text(size=12),
+        axis.text.y = element_text(size=12),
+        legend.position = "bottom",
+        legend.text = element_text(size=14),
+        panel.grid=element_line(size=0.4, color="gray", linetype=2))+
+        scale_color_brewer(type= "qual", palette = "Dark2")
+
+#Special Equipment Loss
+ggplot(dt, aes(x= date,y= special.equipment)) +
+geom_line(size=1, color="red", alpha=0.5)+
+labs(title="Special Equipment Loss",x="",y="",color=NULL)+
+geom_text(aes(x=max(dt$date), y=max(dt$special.equipment), label = max(dt$special.equipment)), size=4, vjust=-1)+
+theme(title= element_text(face="bold", hjust=-0.5, size=20),
+        axis.text.x = element_text(size=18),
+        axis.text.y = element_text(size=18),
+        legend.position = "bottom",
+        legend.text = element_text(size=18),
+        panel.grid=element_line(size=0.4, color="gray", linetype=2))+
+        scale_color_brewer(type= "qual", palette = "Dark2")+
+scale_x_date(date_breaks= "1 month", date_label = "%b")
+```
+Death Toll and Russian War Prisoners
+```{r}
+library(tidyverse)
+library(gridExtra)
+options(repr.plot.width=20, repr.plot.height = 12)
+ plot3 <- dt %>% 
+  group_by(month = lubridate::floor_date(date, "month")) %>%
+  summarise(total=max(personnel)) %>%
+  ggplot(., aes(x=month, y=total, alpha=0.1))+
+  geom_col(aes(color=total), size=1)+
+  geom_line(color="red", size = 1, linetype=2)+
+  labs(title="Death Toll", x="", y="")+
+  geom_text(aes(y=total,label=total), vjust=-0.8, size=4)+
+  scale_x_date(date_breaks = '2 month', date_labels = "%b")+
+  theme(panel.grid.major = element_line(size=0.2, color="gray3", linetype=2),
+        axis.text.x = element_text(size=12),
+        axis.text.y = element_text(size=12),
+        title = element_text(size=20, face="bold"),
+        legend.position="none")+
+  scale_color_steps(low = "orange", high = "red3")
+
+  
+  
+plot3
+```
+<h3>Conclusions</h3>
+<ul>
+<li>Russia has been losing equipments of all forms - air, water, field, and special at an increasing rate every month.</li>
+<li>More and more Russian military personnels are dying in Ukraine.</li>
+<li>Those few military personnels alive, are being held as Prisoners of War in Ukraine.</li>
+</ul>
+<h4>Splitting Data</h4>
+```{r}
+library(caTools)
+set.seed(123321)
+df1[sapply(df1, is.character)] <- lapply(df1[sapply(df1, is.character)], as.factor)
+split=sample.split(df1,SplitRatio = 0.8)
+train=subset(df1,split=="TRUE")
+test=subset(df1,split=="FALSE")
+head(train)
+```
+<h4>Multiple Linear Regression</h4>
+```{r}
+library(car)
+model=lm(helicopter~aircraft+tank+fuel.tank,df1)
+summary(model) #p<0.05. there's a significant relationship between the predictor variables and the response variable
+prediction=predict(model,newdata=data.frame(aircraft=25,tank=150,fuel.tank=60))
+prediction
+
+avPlots(model)
+```
+<h3>AdaBoost </h3>
+```{r}
+library(adabag)
+train$helicopter=as.factor(train$helicopter)
+model_adaboost <- boosting(helicopter~aircraft+tank+fuel.tank, data=train, nIter = 500, type = "real")
+summary(model_adaboost)
+
+#Make Predictions
+pred_test=predict(model_adaboost,newdata=test[, c("aircraft", "tank", "fuel.tank")])
+mse <- mean((as.numeric(pred_test$class) - test$helicopter)^2)
+print(paste("Mean Squared Error: ", mse))
+```
+<h3>XGBoost</h3>
+```{r}
+library(xgboost)
+library(pROC)
+library(caret)
+
+set.seed(321123)
+# Convert data to DMatrix format and using most important features
+dtrain <- xgb.DMatrix(data = as.matrix(train[,c(3,5,10)]), label = train$helicopter)
+dtest <- xgb.DMatrix(data = as.matrix(test[,c(3,5,10)]), label = test$helicopter)
+
+#defining a watchlist
+watchlist = list(train=dtrain, test=dtest)
+
+# Train XGBoost model
+model_xgb = xgb.train(data=dtrain, max.depth = 5, watchlist=watchlist, nrounds = 200)
+
+#Define final model
+model_xgb = xgboost(data = dtrain, max.depth = 3, nrounds = 167, verbose = 0) #min RMSE at epoch 167
+
+summary(model_xgb)
+
+predictions <- predict(model_xgb, dtest)
+#binary.predictions <- ifelse(predictions > 0.5, 1, 0)
+#accuracy <- sum(binary.predictions == test$Attrition_Flag) /  length(test$Attrition_Flag)
+#print(paste("Accuracy = ",accuracy))
+
+print(paste("RMSE = ",RMSE(test[,4], predictions)))
+tss =  sum((test[,4] - mean(test[,4]))^2 )
+```
+Visualize
+```{r}
+x = 1:length(test[,4])                   # visualize the model, actual and predicted data
+plot(x, test[,4], col = "red", type = "l")
+lines(x, predictions, col = "blue", type = "l")
+legend(x = 1, y = 38,  legend = c("original test_y", "predicted test_y"), 
+       col = c("red", "blue"), box.lty = 1, cex = 0.8, lty = c(1, 1))
+```
+
+<h4>AutoML Model Creation</h4>
+Through the h2o package we want to predict the Outcome variable using the other variables. In particular, we want to know what will happen to the war in the future
+```{r}
+# Extrastate: Wars have been categorized by whether they primarily take place within states.
+extrastate <- read.csv("extrastate.csv")
+
+# Interstate: Wars have been categorized by whether they primarily take place between/among states.
+interstate <- read.csv("interstate.csv")
+
+# Intrastate: Wars have been categorized by whether they primarily take place  between/among a state and a non-state actor
+intrastate <- read.csv("intrastate.csv")
+dim(extrastate)
+range(extrastate$start_year1)
+
+extrastate %>%
+  filter(side1_name =="Russia"| side2_name=="Russia") %>%
+  select(start_year1, war_name, side1_name, side2_name, state_fatalities, nonstate_fatalities,outcome)
+
+extrastate %>%
+  filter(side1_name =="Ukraine"| side2_name=="Ukraine") %>%
+  select(start_year1, war_name, side1_name, side2_name, state_fatalities, nonstate_fatalities,outcome)
+
+interstate %>%
+  filter(state_name =="Russia") %>%
+  select(start_year1, war_name, state_name, side,combat_fatalities,outcome)
+
+dim(intrastate)
+range(intrastate$start_year1)
+
+intrastate %>%
+  filter(side1_name =="Russia" | side2_name=="Russia") %>%
+  select(start_year1, war_name, side1_name, side2_name, side1_fatalities, side2_fatalities,outcome)
+```
+<h4>Creation Model</h4>
+```{r}
+set.seed(321123)
+library(h2o)
+library(dplyr)
+library(caret)
+options(warn=-1)
+interstate$outcome <- as.factor(interstate$outcome)
+trainIndex <- createDataPartition(interstate$outcome,p=0.75, list = FALSE)
+training <- interstate[trainIndex,]
+testing <- interstate[-trainIndex,]
+
+#The h2o library is used to automatically search for a suitable machine learning algorithm for 300 seconds to predict the outcome variable with good accuracy:
+set.seed(123)
+h2o.init()
+df_hf <- as.h2o(training)
+y <- "outcome"
+x <- names(training)[c(5,6,7,8,9,22)] #statename, side, starty,startm,startd,combatfat
+
+set.seed(123)
+aml <- h2o.automl(x = x, y = y,
+                  training_frame = df_hf,
+                  max_models = 15)
+lb <- aml@leaderboard
+print(lb, n = nrow(lb))
+```
+<h4>Testing</h4>
+```{r}
+test <- as.h2o(testing)
+model <- aml@leader
+p1 = h2o.predict(model, newdata=test)
+df2 <- as.data.frame(p1$predict)
+df2$predict <- factor(df2$predict, levels = c(1,2,3,4,6,8))
+mean(df2$predict==testing$outcome)
+
+confusionMatrix(df2$predict,testing$outcome)
+```
+<h4>Prediction</h4>
+```{r}
+#head(df3)
+#tail(df3)
+df <- data.frame(state_name="Russia",side=1,start_year1=2022, start_month1=2,start_day1=25, combat_fatalities=21800)
+
+test <- as.h2o(df)
+model <- aml@leader
+p1 = h2o.predict(model, newdata=test)
+
+p1
+```
+<h4>Conclusion</h4>
+According to the algorithm GBM_5_AutoML_1_20230412_204146 with 93.9% Accuracy the war between Russia and UKraine will transforme into another type of war: extrastate (civil war within Russia) or intrastate (war between Russia and non-state actor who could be NATO).
+
+

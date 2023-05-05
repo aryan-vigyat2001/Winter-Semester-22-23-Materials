@@ -1,0 +1,174 @@
+---
+title: "LAB-4 EDA"
+author: "Aryan Vigyat 20BCE1452"
+date: "2023-01-06"
+output: html_document
+---
+Attaching the Libraries
+```{r}
+library(ggpubr)
+library(ggplot2)
+```
+
+<b>1<sup>st</sup>Question</b> <br>
+I Loading the Dataset
+```{r}
+data = mtcars
+head(data, 5)
+```
+II correlation
+```{r}
+cor(mtcars)
+```
+III Shapiro Test <br>
+H0: The population is normally distributed.<br>
+H1: The population is not normally distributed. <br>
+```{r}
+shapiro.test(data$disp)
+shapiro.test(data$mpg)
+shapiro.test(data$drat)
+shapiro.test(data$wt)
+shapiro.test(data$hp)
+```
+Inferences:-
+<ul>
+  <li>For Disp The P-Value is less than 0.05 which rejects the Null Hypothesis to Conclude this is not normally Distributed</li>
+  <li>For MPG The P-Value is more than 0.05 which accepts the Null Hypothesis to Conclude this is normally Distributed </li>
+  <li>For Drat The P-Value is more than 0.05 which accepts the Null Hypothesis to Conclude this is normally Distributed</li>
+  <li>For wt The P-Value is more than 0.05 which accepts the Null Hypothesis to Conclude this is normally Distributed</li>
+  <li>For hp The P-Value is less than 0.05 which rejects the Null Hypothesis to Conclude this is not normally Distributed</li>
+</ul>
+IV Quantile-Quantile Plot(used for checking the if the Values are normally distributed from the normal line)
+```{r}
+qqnorm(data$disp, ylab = "disp")
+qqline(data$disp)
+qqnorm(data$am, ylab = "am")
+qqline(data$am)
+qqnorm(data$hp, ylab = "hp")
+qqline(data$hp)
+qqnorm(data$mpg, ylab = "mpg")
+qqline(data$mpg)
+```
+<br>
+V Correlation Test <br>
+H0: There is no linear Relationship between X and Y <br>
+H1: There is a linear Relationship between X and Y <br>
+```{r}
+cor.test(data$disp, data$am, method = "pearson")
+cor.test(data$hp, data$mpg, method = "pearson")
+cor.test(data$qsec, data$mpg, method = "pearson")
+cor.test(data$cyl, data$disp, method = "pearson")
+```
+Inferences:-
+<ul>
+  <li>For Disp and Am the P-Value(0.0003) is Less than 0.05 , so we reject the Null Hypothesis to conclude that there is strong correlation between them and also correlation value is -0.59</li>
+  <li>For Hp and MPG the P-Value(1.788e-07) is Less than 0.05 , so we reject the Null Hypothesis to conclude that there is strong correlation between them and also there is strong negative correlation which is -0.77</li>
+  <li>For Qsec and MPG the P-Value(0.01) is less than 0.05, so we reject the NULL Hypothesis to conclude that there is correlation between the two variables ans also considering the cor value it is 0.41</li>
+  <li>For Cyl and Disp the P-Value (1.803e-12) is less than 0.05 ,so we reject the NULL Hyothesis to conlude there is a strong correlation between the two variables and also the cor value is 0.90</li>
+</ul>
+
+<b>2<sup>nd</sup></b> Question <br>
+1. Loading the Dataset
+```{r}
+library(readr)
+library(dplyr)
+library(missForest)
+axisbank=read_csv("C:/Users/ayuar/Downloads/AXISBANK.csv")
+summary(axisbank)
+head(axisbank,5)
+```
+<hr>
+
+2. Selecting the Columns for Correlation
+```{r}
+axisbank<-axisbank %>%
+  select('Open','High','Low','Volume','Close')
+```
+<hr>
+3. Checking For NA Values and Inputation
+```{r}
+sum(is.na(axisbank))
+bankdf=prodNA(axisbank,0.3)
+bankdf=bankdf[-(1:400),]
+bankdf %>%
+  summarize(avg=mean(Open,na.rm = TRUE),med=median(Open,na.rm = TRUE))
+bankdf <- bankdf %>%
+  mutate(Open=replace(Open,is.na(Open),median(Open,na.rm = TRUE)))
+bankdf %>%
+  summarize(avg=mean(High,na.rm = TRUE),med=median(High,na.rm = TRUE))
+bankdf <- bankdf %>%
+  mutate(High=replace(High,is.na(High),median(High,na.rm = TRUE)))
+bankdf %>%
+  summarize(avg=mean(Low,na.rm = TRUE),med=median(Low,na.rm = TRUE))
+bankdf <- bankdf %>%
+  mutate(Low=replace(Low,is.na(Low),median(Low,na.rm = TRUE)))
+bankdf %>%
+  summarize(avg=mean(Volume,na.rm = TRUE),med=median(Volume,na.rm = TRUE))
+bankdf <- bankdf %>%
+  mutate(Volume=replace(Volume,is.na(Volume),median(Volume,na.rm = TRUE)))
+bankdf %>%
+  summarize(avg=mean(Close,na.rm = TRUE),med=median(Close,na.rm = TRUE))
+bankdf <- bankdf %>%
+  mutate(Close=replace(Close,is.na(Close),median(Close,na.rm = TRUE)))
+
+```
+<hr>
+4. Correlation Test <br>
+H0: There is no linear Relationship between X and Y <br>
+H1: There is a linear Relationship between X and Y <br>
+```{r}
+library(RColorBrewer) #
+library(corrplot) #Drawing Correlation Plot
+M<-cor(bankdf)
+corrplot(M, type="upper", order="hclust",
+         col=brewer.pal(n=8, name="RdYlBu"))
+cor.test(bankdf$High,bankdf$Low,method = "pearson")
+print("Considering the P less than 0.05 Value as well as the Correlation Value we reject the Null Hypothesis and Say there is a high correlation between the two variables")
+cor.test(bankdf$Open,bankdf$Close,method = "pearson")
+print("Considering the P less than 0.05 Value as well as the Correlation Value we reject the Null Hypothesis and Say there is a high correlation between the two variables")
+cor.test(bankdf$Volume,bankdf$High,method = "pearson")
+print("Considering the P Greater than 0.05 Value as well as the Correlation Value we accept the Null Hypothesis and Say there is a negligible correlation between the two variables")
+cor.test(bankdf$Low,bankdf$Volume,method = "pearson")
+print("Considering the P Greater than 0.05 Value as well as the Correlation Value we accept the Null Hypothesis and Say there is a negligible correlation between the two variables")
+```
+<hr>
+4. Drawing the Q-Q Plots
+```{r}
+#Used to check if the values are normally distributed with the normal line
+qqnorm(bankdf$Open)
+qqline(bankdf$Open)
+qqnorm(bankdf$High)
+qqline(bankdf$High)
+qqnorm(bankdf$Volume)
+qqline(bankdf$Volume)
+qqnorm(bankdf$Close)
+qqline(bankdf$Close)
+qqnorm(bankdf$Low)
+qqline(bankdf$Low)
+```
+<hr>
+5. Shapiro Test
+<br>
+H0: The population is normally distributed.<br>
+H1: The population is not normally distributed. <br>
+```{r}
+shapiro.test(bankdf$Open)
+shapiro.test(bankdf$Close)
+shapiro.test(bankdf$High)
+shapiro.test(bankdf$Low)
+shapiro.test(bankdf$Volume)
+```
+<br>
+Inferences
+<br>
+<ul>
+  <li> For All the Variables ,As the P value is less than 0.05 we reject the Null Hypothesis to concude that variable is not normally distributed which is weighed upon by the Quantile-Quantile Plot which shows the deviations of the values dont seem to be normally distributed</li>
+</ul>
+Time and Date Verification
+```{r}
+Sys.info()
+Sys.time()
+Sys.Date()
+```
+<hr>
+<h2 align="center">Thank You</h2>

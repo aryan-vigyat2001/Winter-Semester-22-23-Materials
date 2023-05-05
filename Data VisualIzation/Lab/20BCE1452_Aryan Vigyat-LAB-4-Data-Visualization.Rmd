@@ -1,0 +1,79 @@
+---
+title: "Lab 4 Data Visualization"
+author: "Aryan Vigyat 20BCE1452"
+date: "2023-01-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Attaching the Libraries
+```{r}
+library(readr)
+library(dplyr)
+library(animation)
+library(factoextra)
+```
+
+1. Loading the Dataset
+```{r}
+Guns <- read_csv("Guns.csv")
+summary(Guns)
+Guns.new<- Guns[,c(3,5,6)]
+Guns.class<-Guns$state
+```
+
+2. Normalize
+```{r}
+normalize <- function(x){
+return ((x-min(x))/(max(x)-min(x)))
+}
+Guns.new$violent=normalize(Guns$violent)
+Guns.new$robbery=normalize(Guns$robbery)
+Guns.new$prisoners=normalize(Guns$prisoners)
+```
+3. Performing K-Means Model
+```{r}
+library(factoextra)
+library(cluster)
+result<- kmeans(Guns.new,4)
+result
+result$size
+result$centers
+result$cluster
+```
+4. Verification of Results
+```{r}
+library(ggplot2)
+result$cluster <- as.factor(result$cluster)
+#Plotting clustering results
+ggplot(Guns.new,aes(violent,robbery,prisoners,color=result$cluster))+geom_point()
+plot(Guns.new[c("violent","robbery")],col=result$cluster)
+plot(Guns.new[,],col=result$cluster)
+table(result$cluster,Guns.class)# Result of table
+```
+5. Animation
+```{r}
+km1<-kmeans.ani(Guns.new,4)
+k2 <- kmeans(Guns.new, centers = 2, nstart = 25)
+k3 <- kmeans(Guns.new, centers = 3, nstart = 25)
+k4 <- kmeans(Guns.new, centers = 4, nstart = 25)
+k5 <- kmeans(Guns.new, centers = 5, nstart = 25)
+#Plots to compare
+p1 <- fviz_cluster(k2, geom = "point", data = Guns.new) + ggtitle("k = 2") # For 2 Clusters
+p2 <- fviz_cluster(k3, geom = "point", data = Guns.new) + ggtitle("k = 3") # For 3 Clusters
+p3 <- fviz_cluster(k4, geom = "point", data = Guns.new) + ggtitle("k = 4") # For 4 Clusters
+p4 <- fviz_cluster(k5, geom = "point", data = Guns.new) + ggtitle("k = 5") # For 5 Clusters
+library(gridExtra)
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+```
+
+Time and Date Verification
+```{r}
+Sys.info()
+Sys.time()
+Sys.Date()
+```
+<hr>
+<h2 align="center">Thank You</h2>

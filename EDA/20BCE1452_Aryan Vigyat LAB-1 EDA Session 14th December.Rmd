@@ -1,0 +1,163 @@
+---
+title: "EDA: LAB-1 Regression Analysis"
+author: "Name: Aryan Vigyat 20BCE1452"
+date: 'Date: 16th December 2022'
+output: html_document
+---
+
+1. Creating the DataFrame with the given vectors
+```{r}
+library(readr)
+library(caret)
+x=c(2,3,4,5,6)
+y=c(12,17,23,28,32)
+df=data.frame(x,y)
+print(df)
+```
+<hr>
+2. Find the best linear fit and graph of the model
+```{r}
+model1<-lm(y~x,data=df)
+model1
+summary(model1)
+plot(df$x,df$y)
+abline(model1,col="black")
+```
+<hr>
+3. Determine the minimum RSS
+```{r}
+ypre=predict(model1,df)
+ydiff=y-ypre
+rss<-0
+for(i in ydiff)
+{
+  rss=rss+i*i
+}
+rss
+```
+<hr>
+4.Draw the Residual Plot and Comment on the suitability of the linear model to this training data
+```{r}
+plot(df$x,ydiff,type="o")
+plot(model1,1)
+#Conclusion The Residuals Seem to be randomly scattered which says model is a good fit for the prediction of target variable y
+```
+<hr>
+5. Evaluate the Standard errors associated with a and b
+```{r}
+rse=sqrt(rss/3)
+mx=mean(x)
+my=mean(y)
+deviations=x-mx
+sdeviations=sum(deviations*deviations)
+sdeviations
+SE_a=rse*(sqrt(1/sdeviations))
+SE_b=rse*(sqrt((1/5)+(mx*mx/sdeviations)))
+print(SE_a)
+print(SE_b)
+```
+<hr>
+6.Determine the 95% Confidence Interval for a and b
+```{r}
+b=model1$coefficients[1]
+a=model1$coefficients[2]
+conf_b=c(b-2*SE_b,b+2*SE_b)
+conf_b
+```
+<hr>
+7.Compute the R-Square Statistic
+```{r}
+tssv=y-my
+tss=sum(tssv*tssv)
+print(tss)
+rsquare=1-(rss/tss)
+print(rsquare)
+```
+<hr>
+8.Predict the value of a test instance from the dataset
+```{r}
+testf=data.frame(x=c(34,5,7,2,5,4,6,8,3))
+predict(model1,testf)
+```
+
+<hr>
+2<sup>nd</sup> Question:
+<br>
+I Loading the Dataset and building the linear model
+```{r}
+Guns<-read_csv("C:/Users/ayuar/Downloads/Guns.csv")
+summary(Guns)
+head(Guns,5)
+model2<-lm(cauc~afam,data=Guns)
+summary(model2)
+plot(Guns$afam,Guns$cauc,main="Afam vs Cauc")
+abline(model2,col="black")
+
+```
+<br>
+Conclusion: Looking at the R-Squared Value We Can see 96% of the Variance is explained by the model and looking at the P-value(<0.05), we can conclude the model is a good fit for predicting the cauc also looking at the median of the residuals which is close to 0
+<hr>
+II Determine the RSS
+```{r}
+rss2=deviance(model2)
+print(rss2)
+```
+III Draw the Residual Plot and Comment on the suitability of the linear model to this training data
+```{r}
+hist(model2$residuals)
+plot(model2,1)
+```
+<br>
+Conclusion: Looking at the Plot we can see the errors are randomly distributed which says model is a good fit for the data and looking at the histogram we can say errors seem to have normally distributed
+<hr>
+IV Evaluate the Standard errors associated with a and b
+```{r}
+rse=sqrt(rss2/1171)
+mx=mean(Guns$afam)
+my=mean(Guns$cauc)
+deviations=Guns$afam-mx
+sdeviations=sum(deviations*deviations)
+sdeviations
+SE_a=rse*(sqrt(1/sdeviations))
+SE_b=rse*(sqrt((1/1173)+(mx*mx/sdeviations)))
+print(SE_a)
+print(SE_b)
+
+```
+<br>
+Conclusion: The smaller the value of the standard error of the estimate, the better the fit of the regression model to the data as Standard Error of b and a are very small we can conclude model is a good fit for the data
+<hr>
+V Determine the 95% Confidence Interval of the Model
+```{r}
+b=model2$coefficients[1]
+a=model2$coefficients[2]
+conf_b=c(b-2*SE_b,b+2*SE_b)
+conf_b
+```
+
+VI Compute the R-Square Statistic
+```{r}
+x=summary(model2)$r.squared
+print(x)
+```
+Conclusion: As the R-Square value is Close to 1 we can say the 96% of the variance is explained by the model hence it is a good fit for the Data
+<hr>
+VII Predict the value of a test instance from the dataset
+```{r}
+set.seed(7)
+validationIndex <- caret::createDataPartition(Guns$afam, p=0.80, list=FALSE)
+#Splitting the DataSet into Training and Testing Dataset
+train <- Guns[validationIndex,]
+test <- Guns[-validationIndex,]
+predict(model2,test)
+```
+<hr>
+Time and Date Verification
+```{r}
+Sys.info()
+Sys.time()
+Sys.Date()
+```
+<hr>
+<h2 align="center">Thank You</h2>
+

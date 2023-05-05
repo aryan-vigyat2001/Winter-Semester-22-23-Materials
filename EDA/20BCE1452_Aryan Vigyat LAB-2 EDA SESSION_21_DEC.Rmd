@@ -1,0 +1,171 @@
+---
+title: "LAB-2 EDA"
+author: "Aryan Vigyat 20BCE1452"
+date: "2022-12-21"
+output: html_document
+---
+1. Creating the DataFrame with the given vectors
+```{r}
+x=c(2,3,4,5,6)
+y=c(12,17,23,28,32)
+df=data.frame(x,y)
+print(df)
+```
+<hr>
+2. Find the best linear fit and graph of the model
+```{r}
+model1<-lm(y~x,data=df)
+model1
+summary(model1)
+plot(df$x,df$y)
+abline(model1,col="black")
+```
+<hr>
+3. Determine the minimum RSS
+```{r}
+ypre=predict(model1,df)
+ydiff=y-ypre
+rss<-0
+for(i in ydiff)
+{
+  rss=rss+i*i
+}
+rss
+```
+<hr>
+4. Determine the TSS
+```{r}
+my=mean(df$y)
+tssv=y-my
+tss=sum(tssv*tssv)
+print(tss)
+```
+<hr>
+5. R<sup>2</sup> Statistics and Adjusted R<sup>2</sup> Statistics
+```{r}
+R_2=1-(rss/tss)
+print("R-Square is ")
+print(R_2)
+ADJR_2=1-((1-R_2)*(5-1)/(5-1-1))
+print("Adjusted R-Square is ")
+print(ADJR_2)
+```
+<hr>
+6. Compute F-Statistic
+```{r}
+ssmv=ypre-my
+ssm=sum(ssmv*ssmv)
+n=nrow(df)
+p=1
+Fval=((ssm/p)/(rss/(n-p-1)))
+print(Fval)
+```
+<hr>
+7. Hypothesis Definition  and Comments
+<br>
+H0: The Coefficients of the Regression Equation are 0 i.e &beta;1 &beta;0 are zero
+<br>
+H1: All Coefficients of the Regression Equation are not simultaneously 0
+```{r}
+fcrit=qf(p=.05, df1=1, df2=3, lower.tail=FALSE)
+print(fcrit)
+fstat=summary(model1)$fstatistic[1]   
+print(fstat)
+df1=1
+df2=3
+pvalue=pf(fstat,df1,df2,lower.tail=F)
+print(pvalue)
+```
+Looking at the P-Value it is less than 0.05 so we reject the Null Hypothesis to conclude There is a relationship between the variables of the regression equation. Also Comparing the F-Critical Value to F-Stat Value We can see there is a very significant difference in them which shows model is a good fit for predicting the target variable.
+<hr>
+2<sup>nd</sup> Question
+```{r}
+library(corrplot)
+df1=data.frame(x1=c(2,3,4,5,6),x2=c(14,15,26,27,28),x3=c(45,89,100,290,478),y=c(12,17,23,28,32))
+cdf1=cor(df1)
+df2=data.frame(x1=c(2,3,4,5,6),x2=c(14,15,26,27,28),x3=c(4,6,8,10,12),y=c(12,17,23,28,32))
+corrplot(cdf1,method='number')
+cdf2=cor(df2)
+corrplot(cdf2,method="number")
+```
+<hr>
+ii)Finding the Regression Equations
+```{r}
+model2=lm(y~x1+x2+x3,data=df1)
+model3=lm(y~x1+x2+x3,data=df2)
+summary(model2)
+summary(model3)
+```
+<h3> Conclusion </h3>
+Looking at the Summary Statistic of the Model consisting the Second Dataset, We get to know that two variables are very highly correlated i.e correlation is 1 so one of the variables is not considered (as we know independent variables are always considered for regression) and The R-Square Value is 0.999 which shows that the model is a good fit to predict the response variable and for the first dataset we cam see the R-Square value is 0.99 which shows there is a good relationship between the dependent variables to predict the target variable which is also fortified by considering the p-Value i.e is 0.03<0.05
+<hr>
+3<sup>rd </sup> Question
+<br>
+1. Loading & Data Preprocessing
+```{r}
+library(readr)
+library(dplyr)
+library(superml)
+library(e1071)
+df <-read.csv("C:/Users/ayuar/Downloads/diamonds.csv")
+head(df,5)
+tail(df,5)
+str(df)
+summary(df)
+sum(is.na(df$carat))
+sum(is.na(df$color))
+sum(is.na(df$cut))
+sum(is.na(df$clarity))
+sum(is.na(df$depth))
+sum(is.na(df$table))
+sum(is.na(df$x))
+sum(is.na(df$y))
+sum(is.na(df$y))
+df$...1<-NULL
+df<-filter(df,x>0,y>0,z>0)
+print("As NA Values are 0 the dataset is perfectly fine for analysis")
+```
+<hr>
+2. Encoding the Categorical Values
+```{r}
+label <- LabelEncoder$new()
+df$cut <- label$fit_transform(df$cut)
+df$color <- label$fit_transform(df$color)
+df$clarity <- label$fit_transform(df$clarity)
+newdf<-df
+```
+<hr>
+3. Correlation Check
+<br>
+```{r}
+cor.test(df$price,df$carat)
+cor.test(df$price,df$cut)
+cor.test(df$price,df$clarity)
+cor.test(df$price,df$x)
+cor.test(df$price,df$y)
+cor.test(df$price,df$z)
+cor.test(df$price,df$table)
+cor.test(df$price,df$depth)
+#Insights
+#Looking at the Results We Can Conclude Price has a Strong Correlation with Carat,x,y,z and less correlation with Clarity,Depth and Table
+```
+4. Creating the Model
+<br>
+```{r}
+model1=lm(price~color+carat+clarity+cut,data=newdf)
+summary(model1)
+fcrit=qf(p=.05, df1=4, df2=53915, lower.tail=FALSE)
+print(fcrit)
+print(summary(model1)$fstatistic[1] )
+```
+<h2> Inferences
+<br>
+<h4>As we can see in the Regression model, The R-Square Value is 0.86 which means 86% of variance in the data is explained by the model which tells us that model is a good fit for the data.Looking at the P-Value it is less than 0.05 so we reject the Null Hypothesis to conclude There is a relationship between the variables of the regression equation Also Considering the Difference between Fcrit and F-stat value we can see there is a very large difference between the two</h4>
+Time and Date Verification
+```{r}
+Sys.info()
+Sys.time()
+Sys.Date()
+```
+<hr>
+<h2 align="center">Thank You</h2>

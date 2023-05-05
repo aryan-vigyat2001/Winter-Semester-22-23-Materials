@@ -1,0 +1,90 @@
+---
+title: "EDA Random Forest"
+author: "Aryan Vigyat 20BCE1452"
+date: "2023-03-05"
+output: html_document
+---
+```{r}
+library(caTools)
+library(pROC)
+library(ggplot2)
+library(caret)
+library(e1071)
+library(party)
+library(knitr)
+library(randomForest)
+```
+1. Loading the Dataset
+```{r}
+split <- sample.split(iris, SplitRatio = 0.7)
+train <- subset(iris, split == "TRUE")
+test <- subset(iris, split == "FALSE")
+```
+2. Building the Model using Decision Tree and Random Forest
+```{r}
+set.seed(120)# Setting seed
+model1 = randomForest(x = train[-5], y = train$Species, ntree = 500)
+summary(train)
+model1
+model2<- randomForest(x = train[-5], y = train$Species, ntree =100)
+```
+3. Predicting Using the Model
+```{r}
+y_pred1 = predict(model1, newdata = test[-5])
+# Confusion Matrix
+confusion_mtx = table(test[, 5], y_pred1)
+confusion_mtx
+plot(model1)
+y_pred2<-predict(model2, test)
+conf1<- table(test$Species, y_pred2)
+conf1
+plot(model2)
+classer1rf<-round(mean(y_pred1!=test$Species),2)
+print(paste('Accuracy For Iris for Random Forest=',1-classer1rf))
+classer1dt<-round(mean(y_pred2!=test$Species),2)
+print(paste('Accuracy For Iris for Decision Tree=',1-classer1dt))
+```
+<ul><li>The Accuracy for Iris Dataset for Random Forest is 0.93 (>80) so the model is a good fit for classification of Species</li><li>The Accuracy for Iris Dataset for Decision Tree is 0.87 (>80) so the model is a good fit for classification of Species</li></ul><hr><h2>2<sup>nd</sup> Question</h2><br>
+1. Loading the Dataset
+```{r}
+df<- read.csv("C:/Users/ayuar/Downloads/ParisHousingClass.csv")
+summary(df)
+df<-na.omit(df)
+head(df,10)
+#Removing the not important columns
+split <- sample.split(df, SplitRatio = 0.7)
+train <- subset(df, split == "TRUE")
+test <- subset(df, split == "FALSE")
+```
+2. Building the Model
+```{r}
+summary(train)
+model1 = randomForest(x = train[-18], y = as.factor(train$category), ntree = 5)
+model1
+model2<- ctree(as.factor(category) ~ ., train)
+```
+3. Prediction using Model
+```{r}
+y_pred1 = predict(model1, newdata = test[-18])
+# Confusion Matrix
+confusion_mtx = table(test[,18], y_pred1)
+confusion_mtx
+plot(model1)
+y_pred2<-predict(model2, test)
+conf1<- table(test$category, y_pred2)
+conf1
+plot(model2)
+classer1rf<-round(mean(y_pred1!=test$category),2)
+print(paste('Accuracy For Iris for Random Forest=',1-classer1rf))
+classer1dt<-round(mean(y_pred2!=test$category),2)
+print(paste('Accuracy For Iris for Decision Tree=',1-classer1dt))
+```
+Time and Date Verification
+```{r}
+Sys.info()
+Sys.time()
+Sys.Date()
+```
+<hr>
+<h2 align="center">Thank You</h2>
+<hr>

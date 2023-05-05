@@ -1,0 +1,133 @@
+---
+title: " Logistic Regression EDA"
+author: "Aryan Vigyat 20BCE1452"
+date: "2023-02-17"
+output: html_document
+---
+<h1>1<sup>st</sup> Question</h1>
+Attaching all the Libraries
+```{r}
+library(caTools)
+library(pROC)
+library(ggplot2)
+```
+
+1. Loading the Dataset
+```{r}
+df<-mtcars
+summary(df)
+head(df,5)
+```
+2. Spliting the Dataset into training and testing
+```{r}
+set.seed(12)
+split<-sample.split(mtcars,SplitRatio=0.7)
+train_df<-subset(mtcars,split=="TRUE")
+test_df<-subset(mtcars,split=="FALSE")
+head(train_df,3)
+head(test_df,3)
+```
+3. Building the Logistic Regression Model
+```{r}
+model1<-glm(vs~wt+disp,family="binomial",data=train_df)
+print(model1)
+```
+4. Predict the Values of the test dataset
+```{r}
+predict_reg<-predict(model1,test_df,type="response")
+predict_reg
+#Taking Value which are greater than 0.5 as 1 and else as 0
+predict_reg<-ifelse(predict_reg>0.5,1,0)
+predict_reg
+```
+5. Evaluating the Model
+```{r}
+conf<-table(test_df$vs,predict_reg)
+conf
+```
+6. Measuring the Accuracy
+```{r}
+classer<-mean(predict_reg!=test_df$vs)
+print(paste('Accuracy=',1-classer))
+roc <- roc(test_df$vs, predict_reg,ci = TRUE)
+auc <- auc(roc)
+plot(roc, color = "red")
+print(auc)
+
+```
+<ul>
+<li>The Model is Accuracy is more than 80% which says it a good fit to predict the categorical variable of V-shape(vs)</li>
+<li>The Area Under the Curver is 0.85 shows the logistic regression model has a good discriminative power </li>
+</ul>
+<h1> 2<sup>nd</sup> Question </h1>
+1. Load the Dataset
+```{r}
+purchase <- read.csv("C:/Users/ayuar/Downloads/purchase.csv")
+set.seed(12)
+split<-sample.split(purchase,SplitRatio=0.8)
+train_df<-subset(purchase,split=="TRUE")
+test_df<-subset(purchase,split=="FALSE")
+head(train_df,3)
+head(test_df,3)
+```
+2. Building the Regression Model
+```{r}
+model2<-glm(Purchased~Age+Gender+EstimatedSalary,family="binomial",data=train_df)
+print(model2)
+```
+3. Testing the Model Manually
+```{r}
+
+coeff = model2$coefficients
+coeff
+pred_val = 1*coeff[3] + coeff[2]*45 + coeff[4]*50000 + coeff[1]
+pred_val = 1/(1 + exp(-pred_val))
+pred_val
+if(pred_val>0.5){
+  print("He will buy the product")
+}else{
+  print("He will not buy the product")
+}
+```
+4. Testing the Model Using Inbuilt Function
+```{r}
+test_df = data.frame(Gender = "Male" ,Age = 45,EstimatedSalary = 50000)
+predict_reg = predict(model2,test_df,type = "response")
+predict_reg
+predict_reg = ifelse(predict_reg>0.5,1,0)
+predict_reg
+```
+5. Evaluating the Model
+```{r}
+test_df<-subset(purchase,split=="FALSE")
+predict_reg<-predict(model2,test_df,type="response")
+predict_reg
+#Taking Value which are greater than 0.5 as 1 and else as 0
+predict_reg<-ifelse(predict_reg>0.5,1,0)
+predict_reg
+conf<-table(test_df$Purchased,predict_reg)
+conf
+```
+6. Measuring the Accuracy
+```{r}
+classer<-mean(predict_reg!=test_df$Purchased)
+print(paste('Accuracy=',1-classer))
+roc <- roc(test_df$Purchased, predict_reg,ci = TRUE)
+auc <- auc(roc)
+plot(roc, color = "red")
+print(auc)
+
+```
+<ul>
+<li>The Model is Accuracy is more than 80% which says it a good fit to predict the categorical variable of V-shape(vs)</li>
+<li>The Area Under the Curver is 0.84 shows the logistic regression model has a good discriminative power </li>
+</ul>
+Time and Date Verification
+```{r}
+Sys.info()
+Sys.time()
+Sys.Date()
+```
+<hr>
+<h2 align="center">Thank You</h2>
+<hr>

@@ -1,0 +1,619 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Data Visualization Lab 7},
+  pdfauthor={Aryan Vigyat},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Data Visualization Lab 7}
+\author{Aryan Vigyat}
+\date{2023-02-09}
+
+\begin{document}
+\maketitle
+
+Loading the Libraries Neeeded
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(igraph)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'igraph'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:stats':
+## 
+##     decompose, spectrum
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:base':
+## 
+##     union
+\end{verbatim}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Loading the Graoh with Adjacency Matrix
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dat}\OtherTok{=}\FunctionTok{read.csv}\NormalTok{(}\FunctionTok{file.choose}\NormalTok{(),}\AttributeTok{header=}\ConstantTok{TRUE}\NormalTok{,}\AttributeTok{sep=}\StringTok{\textquotesingle{},\textquotesingle{}}\NormalTok{, }\AttributeTok{row.names=}\DecValTok{1}\NormalTok{,}\AttributeTok{check.names=}\ConstantTok{FALSE}\NormalTok{)}
+\NormalTok{m}\OtherTok{=}\FunctionTok{as.matrix}\NormalTok{(dat)}
+\NormalTok{net}\OtherTok{=}\FunctionTok{graph.adjacency}\NormalTok{(m,}\AttributeTok{mode=}\StringTok{"directed"}\NormalTok{,}\AttributeTok{weighted=}\ConstantTok{TRUE}\NormalTok{,}\AttributeTok{diag=}\ConstantTok{FALSE}\NormalTok{)}
+\FunctionTok{V}\NormalTok{(net)}\SpecialCharTok{$}\NormalTok{color }\OtherTok{\textless{}{-}} \StringTok{"yellow"}
+\FunctionTok{V}\NormalTok{(net)}\SpecialCharTok{$}\NormalTok{number }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{50}\NormalTok{, }\FunctionTok{vcount}\NormalTok{(net), }\AttributeTok{replace=}\ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{V}\NormalTok{(net)[ number }\SpecialCharTok{\textless{}} \DecValTok{20}\NormalTok{ ]}\SpecialCharTok{$}\NormalTok{color }\OtherTok{\textless{}{-}} \StringTok{"lightblue"}
+
+\FunctionTok{E}\NormalTok{(net)}\SpecialCharTok{$}\NormalTok{weight }\OtherTok{\textless{}{-}} \FunctionTok{runif}\NormalTok{(}\FunctionTok{ecount}\NormalTok{(net))}
+\FunctionTok{E}\NormalTok{(net)}\SpecialCharTok{$}\NormalTok{width }\OtherTok{\textless{}{-}} \DecValTok{1}
+\FunctionTok{E}\NormalTok{(net)}\SpecialCharTok{$}\NormalTok{color }\OtherTok{\textless{}{-}} \StringTok{"red"}
+\FunctionTok{E}\NormalTok{(net)[ weight }\SpecialCharTok{\textless{}} \FloatTok{0.5}\NormalTok{ ]}\SpecialCharTok{$}\NormalTok{width }\OtherTok{\textless{}{-}} \DecValTok{4}
+\FunctionTok{E}\NormalTok{(net)[ weight }\SpecialCharTok{\textless{}} \FloatTok{0.5}\NormalTok{ ]}\SpecialCharTok{$}\NormalTok{color }\OtherTok{\textless{}{-}} \StringTok{"brown"}
+\FunctionTok{plot}\NormalTok{(net, }\AttributeTok{layout =}\NormalTok{ layout.fruchterman.reingold,}\AttributeTok{vertex.label=}\FunctionTok{V}\NormalTok{(net)}\SpecialCharTok{$}\NormalTok{number)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{u2_files/figure-latex/unnamed-chunk-2-1.pdf} 2. Loading
+the Graph with EdgeList
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{e1}\OtherTok{=}\FunctionTok{read.table}\NormalTok{(}\FunctionTok{file.choose}\NormalTok{(),}\AttributeTok{sep=}\StringTok{","}\NormalTok{,}\AttributeTok{header=}\NormalTok{T)}
+\NormalTok{g2 }\OtherTok{\textless{}{-}} \FunctionTok{graph.data.frame}\NormalTok{(e1)}
+\FunctionTok{V}\NormalTok{(g2)}\SpecialCharTok{$}\NormalTok{number}\OtherTok{=}\FunctionTok{sample}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{50}\NormalTok{, }\FunctionTok{vcount}\NormalTok{(g2), }\AttributeTok{replace=}\ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{V}\NormalTok{(g2)}\SpecialCharTok{$}\NormalTok{color}\OtherTok{=}\StringTok{"yellow"}
+\FunctionTok{V}\NormalTok{(g2)[ number }\SpecialCharTok{\textless{}} \DecValTok{20}\NormalTok{ ]}\SpecialCharTok{$}\NormalTok{color }\OtherTok{\textless{}{-}} \StringTok{"lightblue"}
+\FunctionTok{E}\NormalTok{(g2)}\SpecialCharTok{$}\NormalTok{weight }\OtherTok{\textless{}{-}} \FunctionTok{runif}\NormalTok{(}\FunctionTok{ecount}\NormalTok{(g2))}
+\FunctionTok{E}\NormalTok{(g2)}\SpecialCharTok{$}\NormalTok{width }\OtherTok{\textless{}{-}} \DecValTok{1}
+\FunctionTok{E}\NormalTok{(g2)}\SpecialCharTok{$}\NormalTok{color }\OtherTok{\textless{}{-}} \StringTok{"red"}
+\FunctionTok{E}\NormalTok{(g2)[ weight }\SpecialCharTok{\textless{}} \FloatTok{0.5}\NormalTok{ ]}\SpecialCharTok{$}\NormalTok{width }\OtherTok{\textless{}{-}} \DecValTok{4}
+\FunctionTok{E}\NormalTok{(g2)[ weight }\SpecialCharTok{\textless{}} \FloatTok{0.5}\NormalTok{ ]}\SpecialCharTok{$}\NormalTok{color }\OtherTok{\textless{}{-}} \StringTok{"brown"}
+\FunctionTok{plot}\NormalTok{(g2, }\AttributeTok{layout =}\NormalTok{ layout.fruchterman.reingold,}\AttributeTok{vertex.label=}\FunctionTok{V}\NormalTok{(g2)}\SpecialCharTok{$}\NormalTok{number)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{u2_files/figure-latex/unnamed-chunk-3-1.pdf} 3. Display
+the edges \& vertices, the network as matrix and the names of vertices
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#For Graph 1}
+\FunctionTok{get.edgelist}\NormalTok{(net)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       [,1]   [,2]  
+##  [1,] "2000" "2001"
+##  [2,] "2000" "2003"
+##  [3,] "2000" "2005"
+##  [4,] "2000" "2007"
+##  [5,] "2001" "2000"
+##  [6,] "2001" "2002"
+##  [7,] "2001" "2004"
+##  [8,] "2001" "2006"
+##  [9,] "2001" "2007"
+## [10,] "2001" "2009"
+## [11,] "2001" "2010"
+## [12,] "2002" "2000"
+## [13,] "2002" "2001"
+## [14,] "2002" "2004"
+## [15,] "2003" "2000"
+## [16,] "2003" "2001"
+## [17,] "2003" "2002"
+## [18,] "2003" "2005"
+## [19,] "2003" "2007"
+## [20,] "2003" "2009"
+## [21,] "2004" "2000"
+## [22,] "2004" "2002"
+## [23,] "2004" "2005"
+## [24,] "2004" "2007"
+## [25,] "2004" "2009"
+## [26,] "2004" "2010"
+## [27,] "2005" "2002"
+## [28,] "2005" "2003"
+## [29,] "2005" "2004"
+## [30,] "2005" "2006"
+## [31,] "2005" "2010"
+## [32,] "2006" "2002"
+## [33,] "2006" "2004"
+## [34,] "2006" "2008"
+## [35,] "2006" "2010"
+## [36,] "2007" "2002"
+## [37,] "2007" "2003"
+## [38,] "2007" "2004"
+## [39,] "2007" "2006"
+## [40,] "2007" "2010"
+## [41,] "2008" "2000"
+## [42,] "2008" "2004"
+## [43,] "2008" "2006"
+## [44,] "2008" "2009"
+## [45,] "2009" "2000"
+## [46,] "2009" "2001"
+## [47,] "2009" "2002"
+## [48,] "2009" "2004"
+## [49,] "2009" "2005"
+## [50,] "2009" "2007"
+## [51,] "2009" "2008"
+## [52,] "2010" "2001"
+## [53,] "2010" "2002"
+## [54,] "2010" "2003"
+## [55,] "2010" "2005"
+## [56,] "2010" "2006"
+## [57,] "2010" "2007"
+## [58,] "2010" "2008"
+## [59,] "2010" "2009"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{get.adjacency}\NormalTok{(net)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 11 x 11 sparse Matrix of class "dgCMatrix"
+\end{verbatim}
+
+\begin{verbatim}
+##   [[ suppressing 11 column names '2000', '2001', '2002' ... ]]
+\end{verbatim}
+
+\begin{verbatim}
+##                           
+## 2000 . 1 . 1 . 1 . 1 . . .
+## 2001 1 . 1 . 1 . 1 1 . 1 1
+## 2002 1 1 . . 1 . . . . . .
+## 2003 1 1 1 . . 1 . 1 . 1 .
+## 2004 1 . 1 . . 1 . 1 . 1 1
+## 2005 . . 1 1 1 . 1 . . . 1
+## 2006 . . 1 . 1 . . . 1 . 1
+## 2007 . . 1 1 1 . 1 . . . 1
+## 2008 1 . . . 1 . 1 . . 1 .
+## 2009 1 1 1 . 1 1 . 1 1 . .
+## 2010 . 1 1 1 . 1 1 1 1 1 .
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#For Graph 2}
+\FunctionTok{get.edgelist}\NormalTok{(g2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       [,1]   [,2]  
+##  [1,] "2000" "2001"
+##  [2,] "2001" "2002"
+##  [3,] "2002" "2004"
+##  [4,] "2003" "2004"
+##  [5,] "2004" "2003"
+##  [6,] "2004" "2002"
+##  [7,] "2006" "2008"
+##  [8,] "2006" "2007"
+##  [9,] "2008" "2010"
+## [10,] "2008" "2000"
+## [11,] "2010" "2000"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{get.adjacency}\NormalTok{(g2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 9 x 9 sparse Matrix of class "dgCMatrix"
+##      2000 2001 2002 2003 2004 2006 2008 2010 2007
+## 2000    .    1    .    .    .    .    .    .    .
+## 2001    .    .    1    .    .    .    .    .    .
+## 2002    .    .    .    .    1    .    .    .    .
+## 2003    .    .    .    .    1    .    .    .    .
+## 2004    .    .    1    1    .    .    .    .    .
+## 2006    .    .    .    .    .    .    1    .    1
+## 2008    1    .    .    .    .    .    .    1    .
+## 2010    1    .    .    .    .    .    .    .    .
+## 2007    .    .    .    .    .    .    .    .    .
+\end{verbatim}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  Find the count of vertices and edges of the created graph
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#For Graph 1}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{vcount}\NormalTok{(net))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 11
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{ecount}\NormalTok{(net))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 59
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#For Graph 2}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{vcount}\NormalTok{(g2))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 9
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{ecount}\NormalTok{(g2))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 11
+\end{verbatim}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  Display the adjacency vertices of each vertex(individual) in the
+  created graph
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#For Graph 1}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{vcount}\NormalTok{(net)) \{}
+  \CommentTok{\# get the adjacent vertices of each vertex}
+\NormalTok{  adj\_vertices }\OtherTok{\textless{}{-}} \FunctionTok{neighbors}\NormalTok{(net, i)}
+  
+  \CommentTok{\# print the vertex and its adjacent vertices}
+  \FunctionTok{cat}\NormalTok{(}\StringTok{"Vertex"}\NormalTok{, i, }\StringTok{"has the following neighbouring vertices:"}\NormalTok{, adj\_vertices, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Vertex 1 has the following neighbouring vertices: 2 4 6 8 
+## Vertex 2 has the following neighbouring vertices: 1 3 5 7 8 10 11 
+## Vertex 3 has the following neighbouring vertices: 1 2 5 
+## Vertex 4 has the following neighbouring vertices: 1 2 3 6 8 10 
+## Vertex 5 has the following neighbouring vertices: 1 3 6 8 10 11 
+## Vertex 6 has the following neighbouring vertices: 3 4 5 7 11 
+## Vertex 7 has the following neighbouring vertices: 3 5 9 11 
+## Vertex 8 has the following neighbouring vertices: 3 4 5 7 11 
+## Vertex 9 has the following neighbouring vertices: 1 5 7 10 
+## Vertex 10 has the following neighbouring vertices: 1 2 3 5 6 8 9 
+## Vertex 11 has the following neighbouring vertices: 2 3 4 6 7 8 9 10
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#For Graph 2}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{vcount}\NormalTok{(g2)) \{}
+  \CommentTok{\# get the adjacent vertices of each vertex}
+\NormalTok{  adj\_vertices }\OtherTok{\textless{}{-}} \FunctionTok{neighbors}\NormalTok{(g2, i)}
+  
+  \CommentTok{\# print the vertex and its adjacent vertices}
+  \FunctionTok{cat}\NormalTok{(}\StringTok{"Vertex"}\NormalTok{, i, }\StringTok{"has the following neighbouring vertices:"}\NormalTok{, adj\_vertices, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Vertex 1 has the following neighbouring vertices: 2 
+## Vertex 2 has the following neighbouring vertices: 3 
+## Vertex 3 has the following neighbouring vertices: 5 
+## Vertex 4 has the following neighbouring vertices: 5 
+## Vertex 5 has the following neighbouring vertices: 3 4 
+## Vertex 6 has the following neighbouring vertices: 7 9 
+## Vertex 7 has the following neighbouring vertices: 1 8 
+## Vertex 8 has the following neighbouring vertices: 1 
+## Vertex 9 has the following neighbouring vertices:
+\end{verbatim}
+
+6.Find the min and max degree of the created graph
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#For Graph 1}
+\NormalTok{vertex\_degrees }\OtherTok{\textless{}{-}} \FunctionTok{degree}\NormalTok{(net)}
+
+\CommentTok{\# find the minimum and maximum degree}
+\NormalTok{min\_degree }\OtherTok{\textless{}{-}} \FunctionTok{min}\NormalTok{(vertex\_degrees)}
+\NormalTok{max\_degree }\OtherTok{\textless{}{-}} \FunctionTok{max}\NormalTok{(vertex\_degrees)}
+
+\CommentTok{\# print the minimum and maximum degree}
+\FunctionTok{cat}\NormalTok{(}\StringTok{"The minimum degree is"}\NormalTok{, min\_degree, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The minimum degree is 7
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"The maximum degree is"}\NormalTok{, max\_degree, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The maximum degree is 13
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#For Graph 2}
+\NormalTok{vertex\_degrees }\OtherTok{\textless{}{-}} \FunctionTok{degree}\NormalTok{(g2)}
+
+\CommentTok{\# find the minimum and maximum degree}
+\NormalTok{min\_degree }\OtherTok{\textless{}{-}} \FunctionTok{min}\NormalTok{(vertex\_degrees)}
+\NormalTok{max\_degree }\OtherTok{\textless{}{-}} \FunctionTok{max}\NormalTok{(vertex\_degrees)}
+
+\CommentTok{\# print the minimum and maximum degree}
+\FunctionTok{cat}\NormalTok{(}\StringTok{"The minimum degree is"}\NormalTok{, min\_degree, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The minimum degree is 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"The maximum degree is"}\NormalTok{, max\_degree, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The maximum degree is 4
+\end{verbatim}
+
+7. Create \& set vertex attribute property named profit and
+values(``+'', ``-'', ``+'', ``-'', ``+'', ``-'', ``+'', ``-'', ``+'')
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vertex\_attributes }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"+"}\NormalTok{, }\StringTok{"{-}"}\NormalTok{, }\StringTok{"+"}\NormalTok{, }\StringTok{"{-}"}\NormalTok{, }\StringTok{"+"}\NormalTok{, }\StringTok{"{-}"}\NormalTok{, }\StringTok{"+"}\NormalTok{, }\StringTok{"{-}"}\NormalTok{, }\StringTok{"+"}\NormalTok{)}
+
+\CommentTok{\# set the vertex attributes as the "profit" property}
+\FunctionTok{set\_vertex\_attr}\NormalTok{(g2, }\StringTok{"profit"}\NormalTok{, }\AttributeTok{value =}\NormalTok{ vertex\_attributes)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## IGRAPH b875c5a DNW- 9 11 -- 
+## + attr: name (v/c), number (v/n), color (v/c), profit (v/c), weight
+## | (e/n), width (e/n), color (e/c)
+## + edges from b875c5a (vertex names):
+##  [1] 2000->2001 2001->2002 2002->2004 2003->2004 2004->2003 2004->2002
+##  [7] 2006->2008 2006->2007 2008->2010 2008->2000 2010->2000
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# check the vertex attributes}
+\FunctionTok{summary}\NormalTok{(g2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## IGRAPH b875c5a DNW- 9 11 -- 
+## + attr: name (v/c), number (v/n), color (v/c), weight (e/n), width
+## | (e/n), color (e/c)
+\end{verbatim}
+
+8. Create \& set vertex attribute property named type and values(either
+leap or non-leap year)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{V}\NormalTok{(g2)}\SpecialCharTok{$}\NormalTok{name }\OtherTok{\textless{}{-}} \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{V}\NormalTok{(g2)}\SpecialCharTok{$}\NormalTok{name)}
+\FunctionTok{V}\NormalTok{(g2)}\SpecialCharTok{$}\NormalTok{type }\OtherTok{=} \FunctionTok{ifelse}\NormalTok{(}\FunctionTok{V}\NormalTok{(g2)}\SpecialCharTok{$}\NormalTok{name }\SpecialCharTok{\%\%} \DecValTok{4} \SpecialCharTok{==} \DecValTok{0}\NormalTok{, }\StringTok{"Leap"}\NormalTok{, }\StringTok{"Non{-}Leap"}\NormalTok{)}
+\FunctionTok{V}\NormalTok{(g2)}\SpecialCharTok{$}\NormalTok{type}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Leap"     "Non-Leap" "Non-Leap" "Non-Leap" "Leap"     "Non-Leap" "Leap"    
+## [8] "Non-Leap" "Non-Leap"
+\end{verbatim}
+
+9.Create \& set edge attribute named weight and values (if edge exits in
+between leap year vertices then 5 else 1 )
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{E}\NormalTok{(g2)}\SpecialCharTok{$}\NormalTok{weight }\OtherTok{\textless{}{-}} \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{ifelse}\NormalTok{(}\FunctionTok{all}\NormalTok{(}\FunctionTok{V}\NormalTok{(g2)}\SpecialCharTok{$}\NormalTok{type }\SpecialCharTok{==} \StringTok{"Leap"}\NormalTok{), }\DecValTok{5}\NormalTok{, }\DecValTok{1}\NormalTok{))}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{E}\NormalTok{(g2)}\SpecialCharTok{$}\NormalTok{weight)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] 1 1 1 1 1 1 1 1 1 1 1
+\end{verbatim}
+
+10. Convert the created un-directed graph into directed graph based on
+the following rule a. edge directed towards high value vertex
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dg }\OtherTok{=} \FunctionTok{as.directed}\NormalTok{(g2, }\AttributeTok{mode =} \StringTok{"arbitrary"}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(dg,}\AttributeTok{layout=}\NormalTok{layout.circle)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{u2_files/figure-latex/unnamed-chunk-11-1.pdf} 12.
+Display the adjacency matrix of the resultant directed graph
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{E}\NormalTok{(dg, }\AttributeTok{P=}\ConstantTok{NULL}\NormalTok{, }\AttributeTok{path=}\ConstantTok{NULL}\NormalTok{, }\AttributeTok{directed=}\ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## + 11/11 edges from b91c4b5 (vertex names):
+##  [1] 2000->2001 2001->2002 2002->2004 2003->2004 2004->2003 2004->2002
+##  [7] 2006->2008 2006->2007 2008->2010 2008->2000 2010->2000
+\end{verbatim}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{12}
+\tightlist
+\item
+  Display the in-degree and out-degree of each vertex of resultant
+  directed graph
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{indegree }\OtherTok{\textless{}{-}} \FunctionTok{degree}\NormalTok{(dg, }\AttributeTok{mode =} \StringTok{"in"}\NormalTok{)}
+\NormalTok{outdegree }\OtherTok{\textless{}{-}} \FunctionTok{degree}\NormalTok{(dg, }\AttributeTok{mode =} \StringTok{"out"}\NormalTok{)}
+
+\CommentTok{\# Combine the indegree and outdegree into a data frame}
+\NormalTok{df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{vertex =} \FunctionTok{V}\NormalTok{(dg)}\SpecialCharTok{$}\NormalTok{name, }\AttributeTok{indegree =}\NormalTok{ indegree, }\AttributeTok{outdegree =}\NormalTok{ outdegree)}
+
+\CommentTok{\# Display the result}
+\FunctionTok{print}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      vertex indegree outdegree
+## 2000   2000        2         1
+## 2001   2001        1         1
+## 2002   2002        2         1
+## 2003   2003        1         1
+## 2004   2004        2         2
+## 2006   2006        0         2
+## 2008   2008        1         2
+## 2010   2010        1         1
+## 2007   2007        1         0
+\end{verbatim}
+
+\end{document}

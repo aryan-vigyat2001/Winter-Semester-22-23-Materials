@@ -1,0 +1,114 @@
+---
+title: "EDA LAB8 Decision Tree and Naive Bayes"
+author: "Aryan Vigyat 20BCE1452"
+date: "`r Sys.Date()`"
+output: html_document
+---
+<h1>1<sup>st</sup> Question</h1>
+Attaching all the Libraries
+```{r}
+library(caTools)
+library(pROC)
+library(ggplot2)
+library(caret)
+library(e1071)
+library(party)
+library(knitr)
+```
+
+1. Loading the Datasets
+```{r}
+df1=iris
+df2<- read.csv("C:/Users/student/Downloads/creditrisk2.csv",stringsAsFactors=F)
+df3<-read.csv("C:/Users/student/Downloads/tennis.csv",stringsAsFactors=F)
+df2[sapply(df2,is.character)]<-lapply(df2[sapply(df2,is.character)],as.factor)
+df3[sapply(df3,is.character)]<-lapply(df3[sapply(df3,is.character)],as.factor)
+```
+2. Splitting the Datasets
+```{r}
+split<-sample.split(df1,SplitRatio=0.7)
+train_df1<-subset(df1,split=="TRUE")
+test_df1<-subset(df1,split=="FALSE")
+head(train_df1,3)
+head(test_df1,3)
+split<-sample.split(df2,SplitRatio=0.7)
+train_df2<-subset(df2,split=="TRUE")
+test_df2<-subset(df2,split=="FALSE")
+head(train_df2,3)
+head(test_df2,3)
+split<-sample.split(df3,SplitRatio=0.7)
+train_df3<-subset(df3,split=="TRUE")
+test_df3<-subset(df3,split=="FALSE")
+head(train_df3,3)
+head(test_df3,3)
+```
+3. Building the Classification Model Naive Bayes
+```{r}
+# For Iris
+cl1 <- naiveBayes(Species ~ ., data = train_df1)
+y_pred <- predict(cl1, newdata = test_df1)
+conf<-table(test_df1$Species,y_pred)
+conf
+classer1n<-round(mean(y_pred!=test_df1$Species),2)
+print(paste('Accuracy For Iris=',1-classer1n))
+#For Tennis
+cl3 <- naiveBayes(play ~ ., data = train_df3)
+y_pred <- predict(cl3, newdata = test_df3)
+conf<-table(test_df3$play,y_pred)
+conf
+classer3n<-round(mean(y_pred!=test_df3$play),2)
+print(paste('Accuracy For Tennis =',1-classer3n))
+#For CreditRisk
+cl2 <- naiveBayes(Class ~ ., data = train_df2)
+y_pred <- predict(cl2, newdata = test_df2)
+conf<-table(test_df2$Class,y_pred)
+conf
+classer2n<-round(mean(y_pred!=test_df2$Class),2)
+print(paste('Accuracy For Credit Risk =',1-classer2n))
+```
+4. Building the Classification Model Decision Tree
+```{r}
+# For Tennis
+model1<- ctree(Species ~ ., train_df1)
+plot(model1)
+y_pred<-predict(model1, test_df1)
+conf1<- table(test_df1$Species, y_pred)
+conf1
+classer1d<-round(mean(y_pred!=test_df1$Species),2)
+print(paste('Accuracy For Iris=',1-classer1d))
+# For Tennis
+model3<- ctree(play ~ ., train_df3)
+plot(model3)
+y_pred<-predict(model3, test_df3)
+conf3<- table(test_df3$play, y_pred)
+conf3
+classer3d<-round(mean(y_pred!=test_df3$play),2)
+print(paste('Accuracy For Tennis=',1-classer3d))
+# For Credit Risk
+model2<- ctree(Class ~ ., train_df2)
+plot(model2)
+y_pred<-predict(model2, test_df2)
+conf2<- table(test_df2$Class, y_pred)
+conf2
+classer2d<-round(mean(y_pred!=test_df2$Class),2)
+print(paste('Accuracy For Tennis=',1-classer2d))
+
+```
+5. Tabulation of Results
+```{r}
+results<-data.frame(
+  Model=c("Iris","Tennis","Credit Risk"),
+  NaiveBayes=c(1-classer1n,1-classer3n,1-classer2n),
+  DecisionTree=c(1-classer1d,1-classer3d,1-classer2d)
+)
+kable(results,format="html",caption = "Model Accuracy")
+```
+Time and Date Verification
+```{r}
+Sys.info()
+Sys.time()
+Sys.Date()
+```
+<hr>
+<h2 align="center">Thank You</h2>
+<hr>

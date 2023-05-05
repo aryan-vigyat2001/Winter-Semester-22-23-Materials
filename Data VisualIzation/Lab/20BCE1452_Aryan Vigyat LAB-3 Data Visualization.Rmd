@@ -1,0 +1,110 @@
+---
+title: "LAB 3 Data Visualization"
+author: "Aryan Vigyat 20BCE1452"
+date: "2023-01-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Instantiating the Required Libraries<br>
+```{r}
+library(dplyr)
+library(readr)
+library(corrplot)
+library(RColorBrewer)
+library(ggplot2)
+library(GGally)
+```
+
+1. Loading the Dataset
+```{r}
+df=read_csv("C:/Users/ayuar/Downloads/churn_data.csv.zip")
+head(df,5)
+df<-na.omit(df)
+```
+<br>
+2. Selecting the Attributes for Correlation
+```{r}
+df <- df %>%
+  select_if(is.numeric)
+M<-cor(df[,4:12])
+```
+<br>
+3. Drawing all the Correlation Plots
+```{r}
+corrplot(M,method="pie",order="hclust",
+         col=brewer.pal(n=8, name="RdYlBu"))
+corrplot(M, method = "square",order="hclust",
+         col=brewer.pal(n=8, name="RdYlBu"))
+corrplot(M, method = "circle",order="hclust",
+         col=brewer.pal(n=8, name="RdYlBu"))
+corrplot(M, type="upper",order="hclust",
+         col=brewer.pal(n=8, name="RdYlBu"))
+corrplot.mixed(M)
+
+```
+<br>
+4. Scatterplots for checking correlation
+```{r}
+ggplot(df,aes(x=age,y=deposits))+geom_point()+ggtitle("Age vs Deposits")+xlab("Age")+ylab("Deposits")
+ggpairs(df[,1:5])
+
+```
+<br>
+2<sup>nd</sup> Dataset - (Orange)
+
+```{r}
+library(datasets)
+summary(Orange)
+View(Orange)
+head(Orange,5)
+```
+Question 1: Age is a Ratio Variable,Circumference is a ratio Variable and Tree is a Interval Data Type
+<br>
+Question 2:
+```{r}
+mean(Orange$circumference)
+sd(Orange$circumference)
+sd(Orange$circumference)/sqrt(length((Orange$circumference)))
+```
+Question 3:
+<br>
+```{r}
+model1<-lm(circumference~age,data=Orange)
+model1
+```
+Coefficients 
+<ul>
+  <li>Intercept means the constant in the Y Axis.</li>
+  <li>The Second Value Give the Slope of the Linear Model</li>
+</ul>
+Question 4:
+<br>
+```{r}
+model2<-lm(age~circumference,data=Orange)
+summary(model1)
+summary(model2)
+```
+Question 5:
+Inferences
+<ul>
+  <li>The R-Square Value for the both the models is 0.83 so 83 percent of the variance in the Dataset is explained by the Model and also Considering the P-Value (<0.05) so we Say the Model is a good fit</li>
+  <li>For the First Model the median is closer to 0 than the Second model</li>
+</ul>
+<br>
+Question 6:
+<br>
+```{r}
+x=Orange$age
+y=Orange$circumference
+pcor=cor(x,y,method="pearson")
+print(pcor)
+```
+Its closer to 1, so strongly correlated
+<br>
+Question 7:<br>
+Yes The P-Value obtained is 1.931e-14. value of less than 0.05 .Therefore you determine,that it is statistically significant.
+

@@ -1,0 +1,109 @@
+---
+title: "Lab-1"
+author: "Aryan Vigyat 20BCE1452"
+date: "07/12/2022"
+output: html_document
+---
+<hr>
+1. Import the Dataset and print the summary
+```{r}
+library(readr)
+library(dplyr)
+library(moments)
+library(corrplot)
+ncbirths <- read_csv("ncbirths.csv")
+summary(ncbirths)
+```
+<hr>
+2. Check for Na Values and Print their sum
+```{r}
+any(is.na(ncbirths))
+sum(is.na(ncbirths))
+sprintf("Percentange of NA Values is %f",(sum(is.na(ncbirths))/nrow(ncbirths)))
+```
+<hr>
+3. Inputation for NA Values
+```{r}
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+#Inputation for Gained
+sum(is.na(ncbirths$gained))
+#Checking Whether to inpute with median or mean
+ncbirths %>%
+  summarize(avg=mean(gained,na.rm=T),med=median(gained,na.rm = T))
+ncbirths <-ncbirths %>%
+  mutate(gained=replace(gained,is.na(gained),median(gained,na.rm = T)))
+sum(is.na(ncbirths$gained))
+#Inputation for Fage
+ncbirths %>%
+  summarize(avg=mean(fage,na.rm=T),med=median(fage,na.rm = T))
+ncbirths <-ncbirths %>%
+  mutate(fage=replace(fage,is.na(fage),mean(fage,na.rm = T)))
+sum(is.na(ncbirths$fage))
+#Inputation for Visits
+ncbirths %>%
+  summarize(avg=mean(visits,na.rm=T),med=median(visits,na.rm = T))
+ncbirths <-ncbirths %>%
+  mutate(visits=replace(visits,is.na(visits),mean(visits,na.rm = T)))
+sum(is.na(ncbirths$visits))
+ncbirths<-na.omit(ncbirths)
+```
+<hr>
+4. Mean Median and Mode
+```{r}
+#Checking Mean Median and Mode for Visits Column
+mode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+mean(ncbirths$visits)
+median(ncbirths$visits)
+mode(ncbirths$visits)
+
+#Checking Mean Median and Mode for Weight
+mean(ncbirths$weight)
+median(ncbirths$weight)
+mode(ncbirths$weight)
+
+#checking mode for Categorical Values
+mode(ncbirths$whitemom)
+mode(ncbirths$marital)
+```
+<hr>
+5. Skewness ,Kurtosis
+```{r}
+skewness(ncbirths$gained)
+qqnorm(ncbirths$gained)
+qqline(ncbirths$gained)
+kurtosis(ncbirths$gained)
+```
+<hr>
+6. Correlation
+```{r}
+cor(ncbirths$visits,ncbirths$gained)
+cor(ncbirths$weight,ncbirths$gained)
+```
+<hr>
+7. Linear Model
+```{r}
+model1<-lm(gained~weight+weeks+mage,data=ncbirths)
+summary(model1)
+hist(model1$residuals)
+```
+<hr>
+8. Visualization
+```{r}
+boxplot(ncbirths$mage,main="Boxplot for Mage")
+pie(table(ncbirths$mature),radius = 1,main="Pie Chart for Woman Maturity")
+hist(ncbirths$visits,main="Visits in Births")
+plot(ncbirths$weight,type="o",main="Line Plot for Weight")
+barplot(table(ncbirths$mature),main="Maturity in Woman")
+```
+
+```{r}
+Sys.Date()
+Sys.time()
+```
+
